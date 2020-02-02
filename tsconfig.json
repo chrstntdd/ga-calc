@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./*"],
+      "src/*": ["./src/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "jsx": "react",
+    "lib": ["dom", "esnext", "dom.iterable"],
+    "module": "esnext",
+    "outDir": "./build",
+    "rootDir": "src",
+    "target": "esnext",
+    "sourceMap": true,
+    "typeRoots": ["./node_modules/@types"],
+    "allowJs": true
+  },
+  "exclude": ["node_modules/**/*", "src/**/*.spec.*"],
+  "include": ["src/**/*"]
+}

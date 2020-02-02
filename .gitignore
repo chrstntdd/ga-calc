@@ -1,0 +1,10 @@
+node_modules
+
+build
+dist
+lib
+keys
+public
+.cache
+.parcel-cache
+.vscode
