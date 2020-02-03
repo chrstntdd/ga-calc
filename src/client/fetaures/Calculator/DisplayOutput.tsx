@@ -20,13 +20,13 @@ let TimeResult = styled("div")`
   align-items: flex-end;
   position: relative;
   width: 100%;
+`
 
-  & > span.time-label {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 1rem;
-  }
+let TimeLabelSpan = styled("span")`
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1rem;
 `
 
 function DisplayOutput({ unit, length, width, height }: State) {
@@ -55,20 +55,52 @@ function DisplayOutput({ unit, length, width, height }: State) {
   return (
     <ResultContainer>
       <TimeResult>
-        <StyledNum animNumbers={animNumbers} offset={1}>{`${result |
-          0}`}</StyledNum>
-        <span className="time-label">Days</span>
+        <StyledNum animNumbers={animNumbers} offset={1}>
+          {`${result | 0}`}
+        </StyledNum>
+        <TimeLabel offset={1}>Days</TimeLabel>
       </TimeResult>
 
       <TimeResult>
         <StyledNum animNumbers={animNumbers} offset={200}>
           {daysToWeeks(result).toFixed(2)}
         </StyledNum>
-        <span className="time-label">Weeks</span>
+        <TimeLabel offset={200}>Weeks</TimeLabel>
       </TimeResult>
     </ResultContainer>
   )
 }
+
+let TimeLabel = React.memo(function TimeLabel({ offset, children }) {
+  const [trans, setTrans] = React.useState(10)
+  const [opacity, setOpacity] = React.useState(0)
+  const sprungTrans = useSpring(trans)
+  const sprungOp = useSpring(opacity)
+
+  React.useEffect(() => {
+    let handle = setTimeout(() => {
+      setTrans(0)
+      setOpacity(1)
+    }, offset)
+
+    return () => {
+      if (handle) {
+        clearTimeout(handle)
+      }
+    }
+  })
+
+  return (
+    <TimeLabelSpan
+      style={{
+        transform: `translateY(${sprungTrans}px)`,
+        opacity: sprungOp
+      }}
+    >
+      {children}
+    </TimeLabelSpan>
+  )
+})
 
 function StyledNum({
   children,
@@ -89,7 +121,7 @@ function StyledNum({
             animNumbers={animNumbers}
             char={ch}
             offset={i + 1}
-            key={`${i + ch}`}
+            key={i}
             timingOffset={offset}
           />
         )
