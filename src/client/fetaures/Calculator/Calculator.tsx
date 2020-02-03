@@ -25,7 +25,7 @@ let Heading = React.memo(function Heading() {
   )
 })
 
-let Container = styled("div")`
+let MainCalculator = styled("div")`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
@@ -35,8 +35,9 @@ let Container = styled("div")`
   padding: 1rem;
 
   @media (min-width: 760px) {
+    /* render the result on the right */
     align-items: flex-start;
-    flex-direction: row;
+    flex-direction: row-reverse;
   }
 
   & > fieldset {
@@ -66,6 +67,13 @@ let Subtitle = styled("h2")`
   & > a {
     font-style: none;
     color: inherit;
+  }
+
+  /* Hide the spacing boxes on mobile */
+  & ~ [height] {
+    @media (max-width: 760px) {
+      display: none;
+    }
   }
 `
 
@@ -141,7 +149,15 @@ let Calculator = () => {
 
       <Box height="xl" />
 
-      <Container>
+      <MainCalculator>
+        {/* Results must be above the inputs so results are readable on mobile */}
+        <DisplayOutput
+          height={height}
+          width={width}
+          length={length}
+          unit={unit}
+        />
+
         <FormInputs
           height={height}
           width={width}
@@ -149,16 +165,7 @@ let Calculator = () => {
           unit={unit}
           dispatch={dispatch}
         />
-
-        <Box />
-
-        <DisplayOutput
-          height={height}
-          width={width}
-          length={length}
-          unit={unit}
-        />
-      </Container>
+      </MainCalculator>
     </>
   )
 }
