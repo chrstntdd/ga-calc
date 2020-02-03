@@ -3,6 +3,7 @@ import { styled } from "goober"
 
 import { ActiveUnderline } from "../../ActiveUnderline"
 import { Box } from "../../components/styled/Box/Box"
+import { useSpring } from "../../hooks/use-spring"
 
 let ToggleSwitchContainer = styled("div")`
   display: flex;
@@ -34,33 +35,33 @@ let UnitToggleSwitch = React.memo<Props>(function UnitToggleSwitch({
   let cmInputRef = React.useRef(null)
   let containerRef = React.useRef(null)
 
-  let setMM = () => {
+  let setMM = React.useCallback(() => {
     dispatch({ type: "SET_UNIT", payload: "mm" })
-  }
-  let setCM = () => {
+  }, [])
+  let setCM = React.useCallback(() => {
     dispatch({ type: "SET_UNIT", payload: "cm" })
-  }
+  }, [])
 
   return (
     <div ref={containerRef}>
       <ToggleSwitchContainer>
-        <label htmlFor="mm-opt" ref={mmInputRef} onClick={setMM}>
-          <input
-            name="unit-toggle"
-            id="mm-opt"
-            type="radio"
-            onChange={setMM}
-            defaultChecked
-          />
-          Millimeters (mm)
-        </label>
+        <LabelBtn
+          ref={mmInputRef}
+          set={setMM}
+          label="Millimeters (mm)"
+          id="mm-opt"
+          offset={100}
+        />
 
         <Box width="lg" />
 
-        <label htmlFor="cm-opt" ref={cmInputRef} onClick={setCM}>
-          <input name="unit-toggle" id="cm-opt" type="radio" onChange={setCM} />
-          Centimeters (cm)
-        </label>
+        <LabelBtn
+          ref={cmInputRef}
+          set={setCM}
+          label="Centimeters (cm)"
+          id="cm-opt"
+          offset={200}
+        />
       </ToggleSwitchContainer>
 
       <ActiveUnderline
@@ -69,6 +70,36 @@ let UnitToggleSwitch = React.memo<Props>(function UnitToggleSwitch({
         activeIndex={activeIndex}
       />
     </div>
+  )
+})
+
+let LabelBtn = React.forwardRef(({ offset, label, set, id }, ref) => {
+  const [opacity, setOpacity] = React.useState(0)
+  const sprungOp = useSpring(opacity)
+
+  React.useEffect(() => {
+    let handle = setTimeout(() => {
+      setOpacity(1)
+    }, offset)
+
+    return () => {
+      if (handle) {
+        clearTimeout(handle)
+      }
+    }
+  })
+
+  return (
+    <label
+      htmlFor={id}
+      ref={ref}
+      style={{
+        opacity: sprungOp
+      }}
+    >
+      <input name="unit-toggle" id={id} type="radio" onChange={set} />
+      {label}
+    </label>
   )
 })
 

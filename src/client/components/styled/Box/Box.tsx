@@ -1,3 +1,4 @@
+import React from "react"
 import { styled } from "goober"
 
 type SizeScale = "xxs" | "xs" | "sm" | "md" | "lg" | "xl"
@@ -30,5 +31,7 @@ let Box = styled<Props>("div")`
   width: ${({ width }) => sizeToRem(width)};
   height: ${({ height }) => sizeToRem(height)};
 ` as goober.StyledVNode<Props>
+
+Box = React.memo(Box)
 
 export { Box }
