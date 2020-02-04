@@ -145,12 +145,15 @@ let reducer = (state: State, action: Actions): State => {
       return { ...state, width: deriveState(action.payload, state.unit) }
     case "SET_HEIGHT":
       return { ...state, height: deriveState(action.payload, state.unit) }
-
     case "SET_UNIT":
       return { ...state, unit: action.payload }
-
     case "RESET":
-      return initState
+      return {
+        ...state,
+        length: initState.length,
+        width: initState.width,
+        height: initState.height
+      }
   }
 }
 
