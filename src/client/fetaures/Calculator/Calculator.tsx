@@ -76,13 +76,49 @@ let Subtitle = styled("h2")`
     }
   }
 `
+let _ResetBtn = styled("button")`
+  margin-right: 0 auto;
+  border: 1px solid var(--brand-1);
+  padding: 0.8rem;
+  color: var(--brand-2);
+  background-color: var(--brand-1);
+  border-radius: 0.2rem;
+  font-weight: 400;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--brand-2);
+    text-decoration: underline;
+  }
+`
+
+let ResetBtn = ({ onClick, children }) => {
+  const [trans, setTrans] = React.useState(10 * (4 * 1.5))
+  const [opacity, setOpacity] = React.useState(0)
+  const sprungTrans = useSpring(trans)
+  const sprungOp = useSpring(opacity)
+
+  React.useEffect(() => {
+    setTrans(0)
+    setOpacity(1)
+  }, [])
+
+  return (
+    <_ResetBtn
+      onClick={onClick}
+      style={{ transform: `translateY(${sprungTrans}px)`, opacity: sprungOp }}
+    >
+      {children}
+    </_ResetBtn>
+  )
+}
 
 const DEFAULT_MEASUREMENT_VAL = 0
 let initState: State = {
   unit: "mm",
-  length: 1,
-  width: 1,
-  height: 1
+  length: DEFAULT_MEASUREMENT_VAL,
+  width: DEFAULT_MEASUREMENT_VAL,
+  height: DEFAULT_MEASUREMENT_VAL
 }
 
 let deriveState = (input: string, unit: State["unit"]): number => {
@@ -104,26 +140,17 @@ let deriveState = (input: string, unit: State["unit"]): number => {
 let reducer = (state: State, action: Actions): State => {
   switch (action.type) {
     case "SET_LENGTH":
-      return {
-        ...state,
-        length: deriveState(action.payload, state.unit)
-      }
+      return { ...state, length: deriveState(action.payload, state.unit) }
     case "SET_WIDTH":
-      return {
-        ...state,
-        width: deriveState(action.payload, state.unit)
-      }
+      return { ...state, width: deriveState(action.payload, state.unit) }
     case "SET_HEIGHT":
-      return {
-        ...state,
-        height: deriveState(action.payload, state.unit)
-      }
+      return { ...state, height: deriveState(action.payload, state.unit) }
 
     case "SET_UNIT":
-      return {
-        ...state,
-        unit: action.payload
-      }
+      return { ...state, unit: action.payload }
+
+    case "RESET":
+      return initState
   }
 }
 
@@ -169,6 +196,9 @@ let Calculator = () => {
     </>
   )
 }
+
+let inputsContainNonDefaultValues = (...mes) =>
+  mes.some(m => m != DEFAULT_MEASUREMENT_VAL)
 
 let FormInputs = ({
   dispatch,
@@ -216,6 +246,18 @@ let FormInputs = ({
           value={height}
           offset={3}
         />
+
+        <Box height="xs" />
+
+        {inputsContainNonDefaultValues(length, width, height) && (
+          <ResetBtn
+            onClick={() => {
+              dispatch({ type: "RESET" })
+            }}
+          >
+            Clear measurements
+          </ResetBtn>
+        )}
       </FieldsetFlex>
     </fieldset>
   )
@@ -301,8 +343,13 @@ let NumericInput = React.memo<{
       <span className="label">{label}</span>
       <div className="input-container" data-focused={focus}>
         <input
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
+          onFocus={e => {
+            e.target.select()
+            setFocus(true)
+          }}
+          onBlur={() => {
+            setFocus(false)
+          }}
           onChange={e => {
             dispatch({ type: actionType, payload: e.target.value })
           }}
@@ -312,7 +359,6 @@ let NumericInput = React.memo<{
           formNoValidate
           autoComplete="off"
         />
-        {/* <UnitDisplay unit={unit} /> */}
         <Box width="xxs" />
         <span>{unit}</span>
         <Box width="xxs" />

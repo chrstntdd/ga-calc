@@ -10,5 +10,6 @@ type Actions =
   | { type: "SET_WIDTH"; payload: string }
   | { type: "SET_HEIGHT"; payload: string }
   | { type: "SET_UNIT"; payload: State["unit"] }
+  | { type: "RESET" }
 
 export { State, Actions }
