@@ -27,7 +27,7 @@ module.exports = {
 
   bail: IS_PRODUCTION,
 
-  devtool: IS_PRODUCTION ? "source-map" : "cheap-module-source-map",
+  devtool: IS_PRODUCTION ? false : "cheap-module-source-map",
 
   entry: [entryPoint].filter(Boolean),
 
@@ -162,8 +162,9 @@ module.exports = {
       Object.assign(
         {},
         {
-          inject: true,
-          template: path.resolve(__dirname, "src/client/index.html")
+          inject: false,
+          template: path.resolve(__dirname, "src/client/index.html"),
+          minify: false
         }
       )
     ),
