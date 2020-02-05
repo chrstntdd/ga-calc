@@ -40,8 +40,17 @@ glob`
   }
 `
 
+let modeQuery = window.location.search.replace("?", "").trim()
 let root = document.getElementById("root")
+let makeWorld = () => <App />
 
-// ReactDOM.render(<App />, root)
+switch (modeQuery) {
+  case "concurrent":
+    ReactDOM.createRoot(root).render(makeWorld())
 
-ReactDOM.createRoot(root).render(<App />)
+    break
+
+  default:
+    ReactDOM.render(makeWorld(), root)
+    break
+}

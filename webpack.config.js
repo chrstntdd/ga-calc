@@ -162,7 +162,7 @@ module.exports = {
       Object.assign(
         {},
         {
-          inject: false,
+          inject: IS_DEVELOPMENT,
           template: path.resolve(__dirname, "src/client/index.html"),
           minify: false
         }
