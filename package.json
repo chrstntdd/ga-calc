@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start": "NODE_ENV='development' webpack-dev-server -c webpack.config.js --silent",
-    "build": "NODE_ENV='production' BABEL_ENV='modern' webpack -c webpack.config.js --silent"
+    "build": "NODE_ENV='production' BABEL_ENV='modern' webpack -c webpack.config.js --silent && yarn build-inline-template",
+    "build-inline-template": "NODE_ENV='production' ts-node --project tsconfig.node.json ./build.ts"
   },
   "dependencies": {
     "goober": "^1.6.5",

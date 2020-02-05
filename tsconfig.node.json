@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./*"],
+      "src/*": ["./src/*"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "lib": ["dom", "esnext", "dom.iterable"],
+    "module": "CommonJS",
+    "outDir": "./build",
+    "rootDir": "src",
+    "target": "esnext",
+    "sourceMap": true,
+    "typeRoots": ["./node_modules/@types"],
+    "allowJs": true
+  },
+  "exclude": ["node_modules/**/*", "src/**/*.spec.*"],
+  "include": ["src/**/*"]
+}
