@@ -28,12 +28,12 @@ function ActiveUnderline({ container, elements, activeIndex }) {
     let isHere = true
 
     const updateRectangleMeasurements = () => {
-      if (isHere) {
-        unstable_batchedUpdates(() => {
+      unstable_batchedUpdates(() => {
+        if (isHere) {
           setParentNode(container ? measureDomNodes([container])[0] : null)
           setRects(measureDomNodes(elements))
-        })
-      }
+        }
+      })
     }
 
     window.addEventListener("resize", updateRectangleMeasurements)

@@ -47,7 +47,7 @@ function DisplayOutput({ unit, length, width, height }: State) {
   React.useEffect(() => {
     setTimeout(() => {
       setAnimNumbers(false)
-    }, 1000)
+    }, 2000)
   }, [])
 
   result = useSpring(result)
@@ -88,7 +88,7 @@ let TimeLabel = React.memo(function TimeLabel({ offset, children }) {
         clearTimeout(handle)
       }
     }
-  })
+  }, [offset])
 
   return (
     <TimeLabelSpan
@@ -155,7 +155,9 @@ function StyledChar({ char, offset, timingOffset, animNumbers }) {
     }, timingOffset)
 
     return () => {
-      clearTimeout(handle)
+      if (handle) {
+        clearTimeout(handle)
+      }
     }
   }, [animNumbers])
 

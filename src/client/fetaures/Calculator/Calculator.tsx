@@ -358,7 +358,8 @@ let NumericInput = React.memo<{
           }}
           value={value}
           id={id}
-          type="number"
+          type="tel"
+          pattern="[0-9]+"
           formNoValidate
           autoComplete="off"
         />

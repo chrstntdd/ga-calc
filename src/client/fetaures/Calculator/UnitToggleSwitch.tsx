@@ -87,16 +87,10 @@ let LabelBtn = React.forwardRef(({ offset, label, set, id }, ref) => {
         clearTimeout(handle)
       }
     }
-  })
+  }, [offset])
 
   return (
-    <label
-      htmlFor={id}
-      ref={ref}
-      style={{
-        opacity: sprungOp
-      }}
-    >
+    <label htmlFor={id} ref={ref} style={{ opacity: sprungOp }}>
       <input name="unit-toggle" id={id} type="radio" onChange={set} />
       {label}
     </label>
