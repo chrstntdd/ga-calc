@@ -93,20 +93,26 @@ let _ResetBtn = styled("button")`
 `
 
 let ResetBtn = ({ onClick, children }) => {
-  const [trans, setTrans] = React.useState(10 * (4 * 1.5))
+  const [trans, setTrans] = React.useState(30)
   const [opacity, setOpacity] = React.useState(0)
   const sprungTrans = useSpring(trans)
+  const [scale, setScale] = React.useState(0.7)
+  const sprungScale = useSpring(scale)
   const sprungOp = useSpring(opacity)
 
   React.useEffect(() => {
     setTrans(0)
     setOpacity(1)
+    setScale(1)
   }, [])
 
   return (
     <_ResetBtn
       onClick={onClick}
-      style={{ transform: `translateY(${sprungTrans}px)`, opacity: sprungOp }}
+      style={{
+        transform: `translateY(${sprungTrans}px) scale(${sprungScale})`,
+        opacity: sprungOp
+      }}
     >
       {children}
     </_ResetBtn>
@@ -227,7 +233,6 @@ let FormInputs = ({
           label="Length"
           unit={unit}
           value={length}
-          offset={1}
         />
 
         <NumericInput
@@ -237,7 +242,6 @@ let FormInputs = ({
           label="Width"
           unit={unit}
           value={width}
-          offset={2}
         />
 
         <NumericInput
@@ -247,7 +251,6 @@ let FormInputs = ({
           label="Height"
           unit={unit}
           value={height}
-          offset={3}
         />
 
         <Box height="xs" />
@@ -317,37 +320,15 @@ let NumericInput = React.memo<{
   unit: State["unit"]
   label: string
   actionType: string
-  offset: number
-}>(function NumericInput({
-  dispatch,
-  value,
-  id,
-  unit,
-  label,
-  actionType,
-  offset
-}) {
+}>(function NumericInput({ dispatch, value, id, unit, label, actionType }) {
   const [focus, setFocus] = React.useState(false)
-  const [trans, setTrans] = React.useState(10 * (offset * 1.5))
-  const [opacity, setOpacity] = React.useState(0)
-  const sprungTrans = useSpring(trans)
-  const sprungOp = useSpring(opacity)
-
-  React.useEffect(() => {
-    setTrans(0)
-    setOpacity(1)
-  }, [])
 
   return (
-    <Input
-      htmlFor={id}
-      style={{ transform: `translateY(${sprungTrans}px)`, opacity: sprungOp }}
-    >
+    <Input htmlFor={id}>
       <span className="label">{label}</span>
       <div className="input-container" data-focused={focus}>
         <input
-          onFocus={e => {
-            e.target.select()
+          onFocus={() => {
             setFocus(true)
           }}
           onBlur={() => {
@@ -358,8 +339,7 @@ let NumericInput = React.memo<{
           }}
           value={value}
           id={id}
-          type="tel"
-          pattern="[0-9]+"
+          type="number"
           formNoValidate
           autoComplete="off"
         />

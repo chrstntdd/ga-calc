@@ -3,7 +3,6 @@ import { styled } from "goober"
 
 import { ActiveUnderline } from "../../ActiveUnderline"
 import { Box } from "../../components/styled/Box/Box"
-import { useSpring } from "../../hooks/use-spring"
 
 let ToggleSwitchContainer = styled("div")`
   display: flex;
@@ -47,20 +46,18 @@ let UnitToggleSwitch = React.memo<Props>(function UnitToggleSwitch({
       <ToggleSwitchContainer>
         <LabelBtn
           ref={mmInputRef}
-          set={setMM}
+          onChange={setMM}
           label="Millimeters (mm)"
           id="mm-opt"
-          offset={100}
         />
 
         <Box width="lg" />
 
         <LabelBtn
           ref={cmInputRef}
-          set={setCM}
+          onChange={setCM}
           label="Centimeters (cm)"
           id="cm-opt"
-          offset={200}
         />
       </ToggleSwitchContainer>
 
@@ -73,25 +70,17 @@ let UnitToggleSwitch = React.memo<Props>(function UnitToggleSwitch({
   )
 })
 
-let LabelBtn = React.forwardRef(({ offset, label, set, id }, ref) => {
-  const [opacity, setOpacity] = React.useState(0)
-  const sprungOp = useSpring(opacity)
-
-  React.useEffect(() => {
-    let handle = setTimeout(() => {
-      setOpacity(1)
-    }, offset)
-
-    return () => {
-      if (handle) {
-        clearTimeout(handle)
-      }
-    }
-  }, [offset])
-
+let LabelBtn = React.forwardRef<
+  HTMLLabelElement,
+  {
+    label: string
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    id: string
+  }
+>(function LabelBtn({ label, onChange, id }, ref) {
   return (
-    <label htmlFor={id} ref={ref} style={{ opacity: sprungOp }}>
-      <input name="unit-toggle" id={id} type="radio" onChange={set} />
+    <label htmlFor={id} ref={ref}>
+      <input name="unit-toggle" id={id} type="radio" onChange={onChange} />
       {label}
     </label>
   )

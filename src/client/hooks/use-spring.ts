@@ -15,22 +15,21 @@ export function useSpring(target, config?) {
     config
   )
   const [state, setState] = React.useState({
-    spring: t => [target, 0],
+    spring: () => [target, 0],
     now: null
   })
   const [x, v] = teleport ? [target, 0] : state.spring(state.now)
 
-  React.useEffect(
-    function() {
-      const now = performance.now()
-      const [x0, v0] = state.spring(now)
-      const spring = newSpring(target, x0, v0, now, k, c, m)
+  React.useEffect(() => {
+    const now = performance.now()
+    const [x0, v0] = state.spring(now)
+    const spring = newSpring(target, x0, v0, now, k, c, m)
 
-      const raf = queueAnimationFrame(now => setState({ now, spring }))
-      return () => unqueueAnimationFrame(raf)
-    },
-    [target, k, c, m, roundTo(x, decimals + 1), roundTo(v, decimals + 1)]
-  )
+    const raf = queueAnimationFrame(now => setState({ now, spring }))
+    return () => {
+      unqueueAnimationFrame(raf)
+    }
+  }, [target, k, c, m, roundTo(x, decimals + 1), roundTo(v, decimals + 1)])
 
   return roundTo(x, decimals)
 }
@@ -100,7 +99,9 @@ function runQueue() {
   const queue = nextFrameQueue
   nextFrameQueue = []
   for (let i = 0; i < queue.length; i++) {
-    const task = queue[i]
-    task && unstable_batchedUpdates(() => task(now))
+    let task
+    if ((task = queue[i])) {
+      unstable_batchedUpdates(() => task(now))
+    }
   }
 }

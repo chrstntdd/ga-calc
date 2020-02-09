@@ -22,13 +22,6 @@ let TimeResult = styled("div")`
   width: 100%;
 `
 
-let TimeLabelSpan = styled("span")`
-  position: absolute;
-  top: 0;
-  right: 0;
-  font-size: 1rem;
-`
-
 function DisplayOutput({ unit, length, width, height }: State) {
   let [animNumbers, setAnimNumbers] = React.useState(true)
   let result = React.useMemo(() => {
@@ -45,9 +38,14 @@ function DisplayOutput({ unit, length, width, height }: State) {
    * TODO: Find better way of determining when the transition has ended from here
    */
   React.useEffect(() => {
-    setTimeout(() => {
+    let handle = setTimeout(() => {
       setAnimNumbers(false)
     }, 2000)
+    return () => {
+      if (handle) {
+        clearInterval(handle)
+      }
+    }
   }, [])
 
   result = useSpring(result)
@@ -55,63 +53,39 @@ function DisplayOutput({ unit, length, width, height }: State) {
   return (
     <ResultContainer>
       <TimeResult>
-        <StyledNum animNumbers={animNumbers} offset={1}>
-          {`${result | 0}`}
-        </StyledNum>
-        <TimeLabel offset={1}>Days</TimeLabel>
+        <StyledNum animNumbers={animNumbers}>{`${result | 0}`}</StyledNum>
+        <TimeLabel>Days</TimeLabel>
       </TimeResult>
 
       <TimeResult>
-        <StyledNum animNumbers={animNumbers} offset={200}>
+        <StyledNum animNumbers={animNumbers}>
           {daysToWeeks(result).toFixed(2)}
         </StyledNum>
-        <TimeLabel offset={200}>Weeks</TimeLabel>
+        <TimeLabel>Weeks</TimeLabel>
       </TimeResult>
     </ResultContainer>
   )
 }
 
-let TimeLabel = React.memo(function TimeLabel({ offset, children }) {
-  const [trans, setTrans] = React.useState(10)
-  const [opacity, setOpacity] = React.useState(0)
-  const sprungTrans = useSpring(trans)
-  const sprungOp = useSpring(opacity)
+let TimeLabelSpan = styled("span")`
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1rem;
+`
 
-  React.useEffect(() => {
-    let handle = setTimeout(() => {
-      setTrans(0)
-      setOpacity(1)
-    }, offset)
-
-    return () => {
-      if (handle) {
-        clearTimeout(handle)
-      }
-    }
-  }, [offset])
-
-  return (
-    <TimeLabelSpan
-      style={{
-        transform: `translateY(${sprungTrans}px)`,
-        opacity: sprungOp
-      }}
-    >
-      {children}
-    </TimeLabelSpan>
-  )
+let TimeLabel = React.memo(function TimeLabel({ children }) {
+  return <TimeLabelSpan>{children}</TimeLabelSpan>
 })
 
 function StyledNum({
   children,
-  offset,
   animNumbers
 }: {
   children: string
-  offset: number
   animNumbers: boolean
 }) {
-  let chars = children.split("")
+  let chars = React.useMemo(() => children.split(""), [children])
 
   return (
     <div>
@@ -121,8 +95,7 @@ function StyledNum({
             animNumbers={animNumbers}
             char={ch}
             offset={i + 1}
-            key={i}
-            timingOffset={offset}
+            key={`${i}${ch}`}
           />
         )
       })}
@@ -140,24 +113,16 @@ let StyledCharSpan = styled("span")`
   }
 `
 
-function StyledChar({ char, offset, timingOffset, animNumbers }) {
+function StyledChar({ char, offset, animNumbers }) {
   const [trans, setTrans] = React.useState(8 * (offset * 1.5))
   const [opacity, setOpacity] = React.useState(0)
   const sprungTrans = useSpring(trans)
   const sprungOp = useSpring(opacity)
 
   React.useEffect(() => {
-    let handle = setTimeout(() => {
-      if (animNumbers) {
-        setTrans(0)
-        setOpacity(1)
-      }
-    }, timingOffset)
-
-    return () => {
-      if (handle) {
-        clearTimeout(handle)
-      }
+    if (animNumbers) {
+      setTrans(0)
+      setOpacity(1)
     }
   }, [animNumbers])
 
