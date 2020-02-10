@@ -302,7 +302,7 @@ let Input = styled("label")`
       font-size: 1.6rem;
       color: var(--brand-1);
       text-align: right;
-
+      width: 100%;
       min-height: 42px;
 
       &:focus {
