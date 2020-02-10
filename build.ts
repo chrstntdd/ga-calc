@@ -1,5 +1,16 @@
-import { readFileSync, readdirSync, writeFileSync, unlinkSync } from "fs"
-import { join, resolve } from "path"
+import {
+  createReadStream,
+  createWriteStream,
+  readdirSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync
+} from "fs"
+import { join, resolve, basename } from "path"
+import { walkSync } from "@chrstntdd/node"
+
+import { makeDirIfNonExistent } from "./util"
+import { preRenderApp } from "./pre-render-app"
 
 let outDir = join(__dirname, "dist")
 let jsDir = join(outDir, "js")
@@ -43,4 +54,23 @@ let scripts = linkedScripts
 
 html = html.replace(APP_ROOT, `${APP_ROOT}${scripts}`)
 
+html = preRenderApp(html)
+
 writeFileSync(htmlPath, html)
+
+for (let { name } of walkSync(resolve(__dirname, "src/assets"), {
+  includeDirs: false,
+  includeFiles: true,
+  filter: n => /\.png$/.test(n) || n.includes("webmanifest"),
+  maxDepth: 2
+})) {
+  let destination = resolve(outDir, "images", basename(name))
+  makeDirIfNonExistent(destination)
+  copyFile(name, destination)
+}
+
+function copyFile(src: string, dest: string) {
+  let readStream = createReadStream(src)
+
+  readStream.pipe(createWriteStream(dest))
+}

@@ -1,6 +1,8 @@
-import React from "react"
+import { h } from "preact"
 
 import { Calculator } from "./fetaures/Calculator/Calculator"
+
+import "./global.styles"
 
 const App = () => {
   return (

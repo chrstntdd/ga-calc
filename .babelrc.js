@@ -8,6 +8,7 @@ const sharedConfig = {
         [
           require.resolve("@babel/preset-env"),
           {
+            modules: false,
             loose: true,
             exclude: ["transform-regenerator", "transform-async-to-generator"],
             targets: [
@@ -39,10 +40,9 @@ const sharedConfig = {
       ]
     }
   },
-  presets: [require.resolve("@babel/preset-typescript")],
+  presets: [["@babel/preset-typescript", { jsxPragma: "h" }]],
   plugins: [
     IS_DEV && require("./goober-display-name-plugin"),
-    IS_DEV && require.resolve("react-refresh/babel"),
     "preval",
     [
       "module-resolver",
@@ -50,17 +50,12 @@ const sharedConfig = {
         root: ["./src"]
       }
     ],
-    [require.resolve("@babel/plugin-syntax-dynamic-import")],
+    ["@babel/plugin-syntax-dynamic-import"],
+    ["@babel/plugin-proposal-class-properties", { loose: true }],
     [
-      require.resolve("@babel/plugin-proposal-class-properties"),
-      { loose: true }
-    ],
-    [require.resolve("@babel/plugin-transform-react-jsx")],
-    !IS_PRODUCTION && [
-      require.resolve("@babel/plugin-transform-react-jsx-source")
+      "@babel/plugin-transform-react-jsx",
+      { pragma: "h", pragmaFrag: "Fragment" }
     ]
-
-    // ["module:fast-async", { spec: true }]
   ].filter(Boolean)
 }
 

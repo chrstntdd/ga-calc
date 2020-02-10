@@ -1,5 +1,5 @@
-import React from "react"
-import { unstable_batchedUpdates } from "react-dom"
+import { h } from "preact"
+import { useState, useEffect } from "preact/hooks"
 
 const { round, sqrt, exp, sin, cos, pow } = Math
 
@@ -14,13 +14,13 @@ export function useSpring(target, config?) {
     { stiffness: 170, damping: 26, mass: 1, decimals: 2 },
     config
   )
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     spring: () => [target, 0],
     now: null
   })
   const [x, v] = teleport ? [target, 0] : state.spring(state.now)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const now = performance.now()
     const [x0, v0] = state.spring(now)
     const spring = newSpring(target, x0, v0, now, k, c, m)
@@ -101,7 +101,7 @@ function runQueue() {
   for (let i = 0; i < queue.length; i++) {
     let task
     if ((task = queue[i])) {
-      unstable_batchedUpdates(() => task(now))
+      task(now)
     }
   }
 }

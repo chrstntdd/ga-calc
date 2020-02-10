@@ -8,7 +8,7 @@ const path = require("path"),
   OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin"),
   // MiniCssExtractPlugin = require("mini-css-extract-plugin"),
   WorkerPlugin = require("worker-plugin"),
-  ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"),
+  // ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"),
   // errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware"),
   // evalSourceMapMiddleware = require("react-dev-utils/evalSourceMapMiddleware"),
   ExtractCssChunks = require("extract-css-chunks-webpack-plugin"),
@@ -81,13 +81,14 @@ module.exports = {
         vendors: false,
         framework: {
           chunks: "all",
-          name: "react",
-          test: /(?<!node_modules.*)[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription|object-assign)[\\/]/,
+          name: "preact",
+          test: /(?<!node_modules.*)[\\/]node_modules[\\/](preact)[\\/]/,
           priority: 40,
           enforce: true
         },
 
         vendor: {
+          name: "vendor",
           test: /[\\/]node_modules[\\/]/,
           minChunks: 1,
           priority: 30
@@ -188,9 +189,9 @@ module.exports = {
 
     new Stylish(),
 
-    IS_DEVELOPMENT && new webpack.HotModuleReplacementPlugin(),
+    IS_DEVELOPMENT && new webpack.HotModuleReplacementPlugin()
 
-    IS_DEVELOPMENT && new ReactRefreshWebpackPlugin()
+    // IS_DEVELOPMENT && new ReactRefreshWebpackPlugin()
   ].filter(Boolean),
 
   watch: IS_DEVELOPMENT,
