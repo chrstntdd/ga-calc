@@ -1,5 +1,5 @@
-import React from "react"
-import { unstable_batchedUpdates } from "react-dom"
+import { h } from "preact"
+import { useEffect, useState } from "preact/hooks"
 import { styled } from "goober"
 
 import { useSpring } from "./hooks/use-spring"
@@ -21,19 +21,17 @@ const measureDomNodes = (
   elements.flatMap(el => el && el.current && el.current.getBoundingClientRect())
 
 function ActiveUnderline({ container, elements, activeIndex }) {
-  let [rects, setRects] = React.useState([])
-  let [parentNode, setParentNode] = React.useState()
+  let [rects, setRects] = useState([])
+  let [parentNode, setParentNode] = useState(void 0)
 
-  React.useEffect(() => {
+  useEffect(() => {
     let isHere = true
 
     const updateRectangleMeasurements = () => {
-      unstable_batchedUpdates(() => {
-        if (isHere) {
-          setParentNode(container ? measureDomNodes([container])[0] : null)
-          setRects(measureDomNodes(elements))
-        }
-      })
+      if (isHere) {
+        setParentNode(container ? measureDomNodes([container])[0] : null)
+        setRects(measureDomNodes(elements))
+      }
     }
 
     window.addEventListener("resize", updateRectangleMeasurements)
@@ -49,7 +47,7 @@ function ActiveUnderline({ container, elements, activeIndex }) {
     }
   }, [container, elements])
 
-  let style = {},
+  let style = Object.create(null),
     left,
     width,
     transformX = 0

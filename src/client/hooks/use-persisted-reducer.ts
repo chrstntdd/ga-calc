@@ -1,4 +1,4 @@
-import React from "react"
+import { useReducer, useEffect } from "preact/hooks"
 
 const usePersistedReducer = (
   reducer,
@@ -7,13 +7,13 @@ const usePersistedReducer = (
   key,
   storage
 ): [any, Function] => {
-  const [state, dispatch] = React.useReducer(
+  const [state, dispatch] = useReducer(
     reducer,
     storage.get(key, initialState),
     init
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     storage.set(key, state)
   }, [state, key])
 
@@ -43,7 +43,7 @@ const createPersistedReducer = (
     return (reducer, initialState, init?) =>
       usePersistedReducer(reducer, initialState, init, key, storage)
   }
-  return React.useReducer
+  return useReducer
 }
 
 export { createPersistedReducer }

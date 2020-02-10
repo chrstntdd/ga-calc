@@ -1,4 +1,6 @@
-import React from "react"
+import { h } from "preact"
+import { useEffect, useState } from "preact/hooks"
+import { memo, Fragment } from "preact/compat"
 import { styled } from "goober"
 
 import { Box } from "../../components/styled/Box/Box"
@@ -10,9 +12,9 @@ import { UnitToggleSwitch } from "./UnitToggleSwitch"
 import { DisplayOutput } from "./DisplayOutput"
 import { State, Actions } from "./types"
 
-let Heading = React.memo(function Heading() {
+let Heading = memo(function Heading() {
   return (
-    <>
+    <Fragment>
       <Title>📏 GA 🧮</Title>
       <Subtitle>
         Calculate{" "}
@@ -21,7 +23,7 @@ let Heading = React.memo(function Heading() {
         </a>{" "}
         based on MSD
       </Subtitle>
-    </>
+    </Fragment>
   )
 })
 
@@ -29,12 +31,12 @@ let MainCalculator = styled("div")`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  max-width: 720px;
+  max-width: 1160px;
   align-items: center;
   justify-content: center;
   padding: 1rem;
 
-  @media (min-width: 760px) {
+  @media (min-width: 1160px) {
     /* render the result on the right */
     align-items: flex-start;
     flex-direction: row-reverse;
@@ -93,14 +95,14 @@ let _ResetBtn = styled("button")`
 `
 
 let ResetBtn = ({ onClick, children }) => {
-  const [trans, setTrans] = React.useState(30)
-  const [opacity, setOpacity] = React.useState(0)
+  const [trans, setTrans] = useState(30)
+  const [opacity, setOpacity] = useState(0)
   const sprungTrans = useSpring(trans)
-  const [scale, setScale] = React.useState(0.7)
+  const [scale, setScale] = useState(0.7)
   const sprungScale = useSpring(scale)
   const sprungOp = useSpring(opacity)
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTrans(0)
     setOpacity(1)
     setScale(1)
@@ -166,7 +168,9 @@ let reducer = (state: State, action: Actions): State => {
 const usePersistedReducer = createPersistedReducer(
   "calc-red",
   // If localStorage is available, we can use it (the default) - else we create our own storage
-  navigator.cookieEnabled ? void 0 : makeStorageFallback()
+  typeof window !== "undefined" && navigator.cookieEnabled
+    ? void 0
+    : makeStorageFallback()
 )
 
 let Calculator = () => {
@@ -180,7 +184,7 @@ let Calculator = () => {
   height = makeUnit(height, unit)
 
   return (
-    <>
+    <Fragment>
       <Heading />
 
       <Box height="xl" />
@@ -202,7 +206,7 @@ let Calculator = () => {
           dispatch={dispatch}
         />
       </MainCalculator>
-    </>
+    </Fragment>
   )
 }
 
@@ -298,7 +302,6 @@ let Input = styled("label")`
       font-size: 1.6rem;
       color: var(--brand-1);
       text-align: right;
-      max-width: 10rem;
 
       min-height: 42px;
 
@@ -313,7 +316,7 @@ let Input = styled("label")`
   }
 ` as StyledNode
 
-let NumericInput = React.memo<{
+let NumericInput = memo<{
   id: string
   dispatch: any
   value: any
@@ -321,7 +324,7 @@ let NumericInput = React.memo<{
   label: string
   actionType: string
 }>(function NumericInput({ dispatch, value, id, unit, label, actionType }) {
-  const [focus, setFocus] = React.useState(false)
+  const [focus, setFocus] = useState(false)
 
   return (
     <Input htmlFor={id}>
@@ -339,6 +342,7 @@ let NumericInput = React.memo<{
           }}
           value={value}
           id={id}
+          min="0"
           type="number"
           formNoValidate
           autoComplete="off"

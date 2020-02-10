@@ -1,4 +1,6 @@
-import React from "react"
+import { h } from "preact"
+import { useRef, useCallback } from "preact/hooks"
+import { memo, forwardRef } from "preact/compat"
 import { styled } from "goober"
 
 import { ActiveUnderline } from "../../ActiveUnderline"
@@ -26,18 +28,18 @@ type Props = {
   activeIndex: number
 }
 
-let UnitToggleSwitch = React.memo<Props>(function UnitToggleSwitch({
+let UnitToggleSwitch = memo<Props>(function UnitToggleSwitch({
   dispatch,
   activeIndex
 }) {
-  let mmInputRef = React.useRef(null)
-  let cmInputRef = React.useRef(null)
-  let containerRef = React.useRef(null)
+  let mmInputRef = useRef(null)
+  let cmInputRef = useRef(null)
+  let containerRef = useRef(null)
 
-  let setMM = React.useCallback(() => {
+  let setMM = useCallback(() => {
     dispatch({ type: "SET_UNIT", payload: "mm" })
   }, [])
-  let setCM = React.useCallback(() => {
+  let setCM = useCallback(() => {
     dispatch({ type: "SET_UNIT", payload: "cm" })
   }, [])
 
@@ -70,7 +72,7 @@ let UnitToggleSwitch = React.memo<Props>(function UnitToggleSwitch({
   )
 })
 
-let LabelBtn = React.forwardRef<
+let LabelBtn = forwardRef<
   HTMLLabelElement,
   {
     label: string
