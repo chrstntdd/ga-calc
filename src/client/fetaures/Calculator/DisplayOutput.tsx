@@ -94,7 +94,7 @@ function StyledNum({
             animNumbers={animNumbers}
             char={ch}
             key={`${ch}${i}`}
-            timingOffset={i * 70}
+            timingOffset={i * 50}
           />
         )
       })}
@@ -109,10 +109,12 @@ let StyledCharSpan = styled("span")`
   line-height: 1.4;
 `
 
+const scfg = { stiffness: 200, damping: 10, mass: 0.5, decimals: 2 }
+
 function StyledChar({ char, timingOffset, animNumbers }) {
   const [trans, setTrans] = useState(50)
   const [opacity, setOpacity] = useState(0)
-  const sprungTrans = useSpring(trans)
+  const sprungTrans = useSpring(trans, scfg)
   const sprungOp = useSpring(opacity)
 
   useEffect(() => {

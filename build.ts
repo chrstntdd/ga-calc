@@ -1,16 +1,15 @@
 import {
   createReadStream,
   createWriteStream,
-  existsSync,
-  mkdirSync,
   readdirSync,
   readFileSync,
   unlinkSync,
   writeFileSync
 } from "fs"
-import { join, resolve, basename, extname, dirname } from "path"
+import { join, resolve, basename } from "path"
 import { walkSync } from "@chrstntdd/node"
 
+import { makeDirIfNonExistent } from "./util"
 import { preRenderApp } from "./pre-render-app"
 
 let outDir = join(__dirname, "dist")
@@ -74,9 +73,4 @@ function copyFile(src: string, dest: string) {
   let readStream = createReadStream(src)
 
   readStream.pipe(createWriteStream(dest))
-}
-
-function makeDirIfNonExistent(path: string) {
-  let dir = dirname(path)
-  !existsSync(dir) && mkdirSync(dir, { recursive: true })
 }
