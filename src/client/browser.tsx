@@ -1,14 +1,9 @@
-import { h, render, hydrate } from "preact"
-import { setPragma } from "goober"
+import { h, render } from "preact"
+import "normalize.css"
 
 import { App } from "./App"
-
-setPragma(h)
+import "./global.css"
 
 let root = document.getElementById("root")
 
-if (root.firstChild) {
-  hydrate(<App />, root)
-} else {
-  render(<App />, root)
-}
+render(<App />, root)

@@ -1,11 +1,13 @@
 import { h } from "preact"
-import { extractCss, setPragma } from "goober"
+import { readFileSync } from "fs"
 import { render } from "preact-render-to-string"
 import { minify } from "html-minifier"
+import { collect } from "linaria/server"
+
+import { walkSync } from "@chrstntdd/node"
 
 import { App } from "./build/client/App"
-
-setPragma(h)
+import { join } from "path"
 
 const HTML_MINIFIER_OPTS = {
   collapseBooleanAttributes: true,
@@ -24,7 +26,17 @@ const HTML_MINIFIER_OPTS = {
 
 function preRenderApp(htmlTemplate: string): string {
   let html = render(<App />)
-  const styleTag = `<style id="_goober">${extractCss()}</style>`
+  let css
+  for (let { name } of walkSync(join(__dirname, "dist/css"), {
+    includeFiles: true,
+    includeDirs: false,
+    filter: n => /\.css$/.test(n)
+  })) {
+    css = readFileSync(name, "utf-8")
+  }
+  const { critical, other } = collect(html, css)
+
+  const styleTag = `<style>${critical + other}</style>`
 
   let preRenderedTemplate = htmlTemplate
     // .replace('<div id="root"></div>', `<div id="root">${html}</div>`)

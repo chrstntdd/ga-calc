@@ -21,8 +21,15 @@ let jsFiles = readdirSync(jsDir, "utf-8")
 
 const BODY_START = "<body>"
 const HEAD_END = "</head>"
+const APP_ROOT = '<div id="root"></div>'
 
 let linkedScripts = []
+
+const first = "runtime~"
+
+jsFiles = jsFiles.sort((a, b) =>
+  a.includes(first) ? -1 : b.includes(first) ? 1 : 0
+)
 
 for (let i = 0; i < jsFiles.length; i++) {
   const element = jsFiles[i]
@@ -31,10 +38,7 @@ for (let i = 0; i < jsFiles.length; i++) {
 
     if (/^runtime~/.test(element)) {
       unlinkSync(join(jsDir, element))
-      html = html.replace(
-        BODY_START,
-        `${BODY_START}<script>${content}</script>`
-      )
+      html = html.replace(APP_ROOT, `${APP_ROOT}<script>${content}</script>`)
     } else {
       let publicPath = `/js/${element}`
       html = html.replace(
@@ -46,13 +50,13 @@ for (let i = 0; i < jsFiles.length; i++) {
   }
 }
 
-const APP_ROOT = '<div id="root"></div>'
-
 let scripts = linkedScripts
   .map(s => `<script src="${s}" async defer></script>`)
   .join("")
 
-html = html.replace(APP_ROOT, `${APP_ROOT}${scripts}`)
+const BODY_END = "</body>"
+
+html = html.replace(BODY_END, `${scripts}${BODY_END}`)
 
 html = preRenderApp(html)
 

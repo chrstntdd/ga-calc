@@ -40,18 +40,10 @@ const sharedConfig = {
       ]
     }
   },
-  presets: [["@babel/preset-typescript", { jsxPragma: "h" }]],
+  presets: [["@babel/preset-typescript", { jsxPragma: "h" }], "linaria/babel"],
   plugins: [
     IS_DEV && require("./goober-display-name-plugin"),
     "preval",
-    [
-      "module-resolver",
-      {
-        root: ["./src"]
-      }
-    ],
-    ["@babel/plugin-syntax-dynamic-import"],
-    ["@babel/plugin-proposal-class-properties", { loose: true }],
     [
       "@babel/plugin-transform-react-jsx",
       { pragma: "h", pragmaFrag: "Fragment" }

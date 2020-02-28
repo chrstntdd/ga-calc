@@ -1,8 +1,6 @@
 import { h } from "preact"
 
-import { Calculator } from "./fetaures/Calculator/Calculator"
-
-import "./global.styles"
+import { Calculator } from "./features/Calculator/Calculator"
 
 const App = () => {
   return (

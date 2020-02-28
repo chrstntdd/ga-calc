@@ -8,3 +8,4 @@ public
 .cache
 .parcel-cache
 .vscode
+.linaria-cache

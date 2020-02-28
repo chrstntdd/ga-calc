@@ -6,11 +6,6 @@ const path = require("path"),
   { CleanWebpackPlugin } = require("clean-webpack-plugin"),
   Stylish = require("webpack-stylish"),
   OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin"),
-  // MiniCssExtractPlugin = require("mini-css-extract-plugin"),
-  WorkerPlugin = require("worker-plugin"),
-  // ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"),
-  // errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware"),
-  // evalSourceMapMiddleware = require("react-dev-utils/evalSourceMapMiddleware"),
   ExtractCssChunks = require("extract-css-chunks-webpack-plugin"),
   // ENV VARIABLES
   IS_PRODUCTION = process.env.NODE_ENV === "production",
@@ -106,7 +101,7 @@ module.exports = {
   },
 
   resolve: {
-    modules: ["node_modules", path.resolve(__dirname, "../../node_modules")],
+    modules: ["node_modules"],
     extensions: [".ts", ".tsx", ".mjs", ".js", ".json", ".jsx"]
   },
 
@@ -120,9 +115,15 @@ module.exports = {
           {
             test: /\.tsx?$/,
             exclude: /node_modules/,
-            use: {
-              loader: require.resolve("babel-loader")
-            }
+            use: [
+              { loader: require.resolve("babel-loader") },
+              {
+                loader: "linaria/loader",
+                options: {
+                  sourceMap: IS_DEVELOPMENT
+                }
+              }
+            ]
           },
 
           {
@@ -139,18 +140,6 @@ module.exports = {
                 : require.resolve("style-loader"),
               require.resolve("css-loader")
             ]
-          },
-
-          {
-            loader: require.resolve("file-loader"),
-            // Exclude `js` files to keep "css" loader working as it injects
-            // its runtime that would otherwise be processed through "file" loader.
-            // Also exclude `html` and `json` extensions so they get processed
-            // by webpacks internal loaders.
-            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
-            options: {
-              name: "static/media/[name].[hash:8].[ext]"
-            }
           }
         ]
       }
@@ -175,14 +164,9 @@ module.exports = {
       __DEV__: IS_DEVELOPMENT
     }),
 
-    new WorkerPlugin(),
-
     IS_PRODUCTION &&
       new ExtractCssChunks({
-        filename: IS_PRODUCTION ? "./css/main.[contenthash:8].css" : "[id].css",
-        chunkFilename: IS_PRODUCTION
-          ? "./css/[id].[contenthash:8].css"
-          : "[id].css"
+        filename: IS_PRODUCTION ? "./css/main.[contenthash:8].css" : "[id].css"
       }),
 
     new CleanWebpackPlugin(),
@@ -190,8 +174,6 @@ module.exports = {
     new Stylish(),
 
     IS_DEVELOPMENT && new webpack.HotModuleReplacementPlugin()
-
-    // IS_DEVELOPMENT && new ReactRefreshWebpackPlugin()
   ].filter(Boolean),
 
   watch: IS_DEVELOPMENT,
