@@ -1,10 +1,10 @@
 import { h } from "preact"
 import { useEffect, useState } from "preact/hooks"
-import { styled } from "goober"
+import { css } from "linaria"
 
 import { useSpring } from "./hooks/use-spring"
 
-let StyledActiveUnderline = styled("div")`
+let cn_activeUnderline = css`
   position: relative;
   height: 0.2rem;
   background-color: var(--brand-1);
@@ -16,7 +16,7 @@ let StyledActiveUnderline = styled("div")`
 type Rectangle = ClientRect | DOMRect
 
 const measureDomNodes = (
-  elements: React.RefObject<HTMLElement>[]
+  elements: preact.RefObject<HTMLElement>[]
 ): Rectangle[] =>
   elements.flatMap(el => el && el.current && el.current.getBoundingClientRect())
 
@@ -34,7 +34,7 @@ function ActiveUnderline({ container, elements, activeIndex }) {
       }
     }
 
-    window.addEventListener("resize", updateRectangleMeasurements)
+    addEventListener("resize", updateRectangleMeasurements)
 
     let rafRef = requestAnimationFrame(updateRectangleMeasurements)
 
@@ -43,7 +43,7 @@ function ActiveUnderline({ container, elements, activeIndex }) {
 
       if (rafRef) cancelAnimationFrame(rafRef)
 
-      window.removeEventListener("resize", updateRectangleMeasurements)
+      removeEventListener("resize", updateRectangleMeasurements)
     }
   }, [container, elements])
 
@@ -71,7 +71,7 @@ function ActiveUnderline({ container, elements, activeIndex }) {
   style.transform = `translate3d(${sprungTransform}px, 0, 0)`
   style.width = `${sprungWidth}px`
 
-  return <StyledActiveUnderline style={style} />
+  return <div style={style} className={cn_activeUnderline} />
 }
 
 export { ActiveUnderline }

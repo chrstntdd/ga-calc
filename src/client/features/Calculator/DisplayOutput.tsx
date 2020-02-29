@@ -1,14 +1,14 @@
 import { h } from "preact"
 import { useMemo, useState, useEffect } from "preact/hooks"
 import { memo } from "preact/compat"
-import { styled } from "goober"
+import { css } from "linaria"
 
 import { useSpring } from "../../hooks/use-spring"
 
 import { State } from "./types"
 import { meanSacDiameter, cmToMm, daysToWeeks } from "./helpers"
 
-let ResultContainer = styled("div")`
+let cn_resultContainer = css`
   width: 100%;
   margin: 1rem 0;
   @media (min-width: 1160px) {
@@ -16,7 +16,7 @@ let ResultContainer = styled("div")`
   }
 `
 
-let TimeResult = styled("div")`
+let cn_timeResult = css`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -24,7 +24,7 @@ let TimeResult = styled("div")`
   width: 100%;
 `
 
-let TimeLabelSpan = styled("span")`
+let cn_timeLabelSpan = css`
   position: absolute;
   top: 0;
   right: 0;
@@ -55,26 +55,26 @@ function DisplayOutput({ unit, length, width, height }: State) {
   result = useSpring(result)
 
   return (
-    <ResultContainer>
-      <TimeResult>
+    <div className={cn_resultContainer}>
+      <div className={cn_timeResult}>
         <StyledNum animNumbers={animNumbers} offset={1}>
           {`${Math.floor(result)}`}
         </StyledNum>
         <TimeLabel>Days</TimeLabel>
-      </TimeResult>
+      </div>
 
-      <TimeResult>
+      <div className={cn_timeResult}>
         <StyledNum animNumbers={animNumbers} offset={200}>
           {daysToWeeks(result).toFixed(2)}
         </StyledNum>
         <TimeLabel>Weeks</TimeLabel>
-      </TimeResult>
-    </ResultContainer>
+      </div>
+    </div>
   )
 }
 
 let TimeLabel = memo(function TimeLabel({ children }) {
-  return <TimeLabelSpan>{children}</TimeLabelSpan>
+  return <span className={cn_timeLabelSpan}>{children}</span>
 })
 
 function StyledNum({
@@ -88,7 +88,7 @@ function StyledNum({
   let chars = children.split("")
   return (
     <div>
-      {chars.map((ch, i) => {
+      {map(chars, (ch, i) => {
         return (
           <StyledChar
             animNumbers={animNumbers}
@@ -102,7 +102,7 @@ function StyledNum({
   )
 }
 
-let StyledCharSpan = styled("span")`
+let cn_styledCharSpan = css`
   font-size: 5.2rem;
   font-variant-numeric: tabular-nums;
   display: inline-block;
@@ -133,15 +133,30 @@ function StyledChar({ char, timingOffset, animNumbers }) {
   }, [animNumbers])
 
   return (
-    <StyledCharSpan
+    <span
+      className={cn_styledCharSpan}
       style={{
         transform: `translateY(${animNumbers ? sprungTrans : 0}px)`,
         opacity: animNumbers ? sprungOp : 1
       }}
     >
       {char}
-    </StyledCharSpan>
+    </span>
   )
+}
+
+function map<A, B>(arr: A[], fn: (a: A, i: number, arr: A[]) => B): B[] {
+  if (!arr) return []
+
+  let i = 0,
+    len = arr.length,
+    out = new Array(len)
+
+  for (; i < len; i++) {
+    out[i] = fn(arr[i], i, arr)
+  }
+
+  return out
 }
 
 export { DisplayOutput }

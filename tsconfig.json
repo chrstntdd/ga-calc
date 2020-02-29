@@ -10,7 +10,7 @@
     "moduleResolution": "node",
     "jsx": "react",
     "jsxFactory": "h",
-    "lib": ["dom", "esnext", "dom.iterable"],
+    "lib": ["dom", "esnext", "dom.iterable", "WebWorker"],
     "module": "esnext",
     "outDir": "./build",
     "rootDir": "src",

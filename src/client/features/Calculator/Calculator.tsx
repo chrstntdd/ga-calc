@@ -1,7 +1,7 @@
 import { h } from "preact"
 import { useEffect, useState } from "preact/hooks"
 import { memo, Fragment } from "preact/compat"
-import { styled } from "goober"
+import { css } from "linaria"
 
 import { Box } from "../../components/styled/Box/Box"
 import { createPersistedReducer } from "../../hooks/use-persisted-reducer"
@@ -10,24 +10,10 @@ import { useSpring } from "../../hooks/use-spring"
 import { makeUnit, cmToMm, makeStorageFallback } from "./helpers"
 import { UnitToggleSwitch } from "./UnitToggleSwitch"
 import { DisplayOutput } from "./DisplayOutput"
+import { Heading } from "./Heading"
 import { State, Actions } from "./types"
 
-let Heading = memo(function Heading() {
-  return (
-    <Fragment>
-      <Title>📏 GA 🧮</Title>
-      <Subtitle>
-        Calculate{" "}
-        <a href="https://en.wikipedia.org/wiki/Gestational_age">
-          gestational age
-        </a>{" "}
-        based on MSD
-      </Subtitle>
-    </Fragment>
-  )
-})
-
-let MainCalculator = styled("div")`
+let cn_mainCalculator = css`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
@@ -51,39 +37,16 @@ let MainCalculator = styled("div")`
   }
 `
 
-let FieldsetFlex = styled("div")`
+let cn_filedSet = css`
   display: flex;
   flex-direction: column;
 `
 
-let Title = styled("h1")`
-  font-size: 2.8rem;
-  margin: 0 auto;
-  text-align: center;
-`
-let Subtitle = styled("h2")`
-  font-size: 1rem;
-  margin: 0 auto;
-  text-align: center;
-  font-style: italic;
-  & > a {
-    font-style: none;
-    color: inherit;
-  }
-
-  /* Hide the spacing boxes on mobile */
-  & ~ [height] {
-    @media (max-width: 760px) {
-      display: none;
-    }
-  }
-`
-let _ResetBtn = styled("button")`
-  margin-right: 0 auto;
+let cn_resetBtn = css`
   border: 1px solid var(--brand-1);
   padding: 0.8rem;
-  color: var(--brand-2);
-  background-color: var(--brand-1);
+  color: white;
+  background-color: transparent;
   border-radius: 0.2rem;
   font-weight: 400;
 
@@ -94,7 +57,7 @@ let _ResetBtn = styled("button")`
   }
 `
 
-let ResetBtn = ({ onClick, children }) => {
+let ResetBtn = ({ onClick, children, show }) => {
   const [trans, setTrans] = useState(30)
   const [opacity, setOpacity] = useState(0)
   const sprungTrans = useSpring(trans)
@@ -104,12 +67,16 @@ let ResetBtn = ({ onClick, children }) => {
 
   useEffect(() => {
     setTrans(0)
-    setOpacity(1)
     setScale(1)
   }, [])
 
+  useEffect(() => {
+    setOpacity(show ? 1 : 0)
+  }, [show])
+
   return (
-    <_ResetBtn
+    <button
+      className={cn_resetBtn}
       onClick={onClick}
       style={{
         transform: `translateY(${sprungTrans}px) scale(${sprungScale})`,
@@ -117,7 +84,7 @@ let ResetBtn = ({ onClick, children }) => {
       }}
     >
       {children}
-    </_ResetBtn>
+    </button>
   )
 }
 
@@ -189,7 +156,7 @@ let Calculator = () => {
 
       <Box height="xl" />
 
-      <MainCalculator>
+      <div className={cn_mainCalculator}>
         {/* Results must be above the inputs so results are readable on mobile */}
         <DisplayOutput
           height={height}
@@ -205,7 +172,7 @@ let Calculator = () => {
           unit={unit}
           dispatch={dispatch}
         />
-      </MainCalculator>
+      </div>
     </Fragment>
   )
 }
@@ -222,7 +189,7 @@ let FormInputs = ({
 }: { dispatch: any } & State) => {
   return (
     <fieldset>
-      <FieldsetFlex>
+      <div className={cn_filedSet}>
         <UnitToggleSwitch
           dispatch={dispatch}
           activeIndex={unit === "mm" ? 0 : 1}
@@ -259,62 +226,59 @@ let FormInputs = ({
 
         <Box height="xs" />
 
-        {inputsContainNonDefaultValues(length, width, height) && (
-          <ResetBtn
-            onClick={() => {
-              dispatch({ type: "RESET" })
-            }}
-          >
-            Clear measurements
-          </ResetBtn>
-        )}
-      </FieldsetFlex>
+        <ResetBtn
+          show={inputsContainNonDefaultValues(length, width, height)}
+          onClick={() => {
+            dispatch({ type: "RESET" })
+          }}
+        >
+          Clear measurements
+        </ResetBtn>
+      </div>
     </fieldset>
   )
 }
 
-let Input = styled("label")`
+let cn_label = css`
   display: flex;
   align-items: center;
   position: relative;
   margin: 0.6rem 0;
+`
 
-  .label {
-    min-width: 60px;
+let cn_input_container = css`
+  display: flex;
+  border: 1px solid var(--brand-1);
+  align-items: center;
+  border-radius: 0.2rem;
+  transition: border 200ms ease;
+  width: 100%;
+  justify-content: flex-end;
+
+  &[data-focused="true"] {
+    box-shadow: 0 0 0 2px var(--brand-1);
   }
+`
 
-  .input-container {
-    display: flex;
-    border: 1px solid var(--brand-1);
-    align-items: center;
-    border-radius: 0.2rem;
-    transition: border 200ms ease;
-    width: 100%;
-    justify-content: flex-end;
+let cn_input = css`
+  border: none;
+  background-color: transparent;
+  font-size: 1.6rem;
+  color: var(--brand-1);
+  text-align: right;
+  width: 100%;
+  min-height: 42px;
 
-    &[data-focused="true"] {
-      box-shadow: 0 0 0 2px var(--brand-1);
-    }
-
-    & > input {
-      border: none;
-      background-color: transparent;
-      font-size: 1.6rem;
-      color: var(--brand-1);
-      text-align: right;
-      width: 100%;
-      min-height: 42px;
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    & > .unit {
-      color: white;
-    }
+  &:focus {
+    outline: none;
   }
-` as StyledNode
+`
+
+let cn_label_span = css`
+  min-width: 60px;
+  font-variant: small-caps;
+  font-weight: 600;
+`
 
 let NumericInput = memo<{
   id: string
@@ -327,10 +291,11 @@ let NumericInput = memo<{
   const [focus, setFocus] = useState(false)
 
   return (
-    <Input htmlFor={id}>
-      <span className="label">{label}</span>
-      <div className="input-container" data-focused={focus}>
+    <label htmlFor={id} className={cn_label}>
+      <span className={cn_label_span}>{label}</span>
+      <div className={cn_input_container} data-focused={focus}>
         <input
+          className={cn_input}
           onFocus={() => {
             setFocus(true)
           }}
@@ -338,12 +303,13 @@ let NumericInput = memo<{
             setFocus(false)
           }}
           onChange={e => {
-            dispatch({ type: actionType, payload: e.target.value })
+            dispatch({ type: actionType, payload: e.currentTarget!.value })
           }}
           value={value}
           id={id}
           min="0"
-          type="number"
+          type="text"
+          inputMode="decimal"
           formNoValidate
           autoComplete="off"
         />
@@ -351,7 +317,7 @@ let NumericInput = memo<{
         <span>{unit}</span>
         <Box width="xxs" />
       </div>
-    </Input>
+    </label>
   )
 })
 

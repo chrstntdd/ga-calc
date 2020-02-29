@@ -1,0 +1,46 @@
+:root {
+  --brand-1: white;
+  --brand-2: #d18fb4;
+}
+
+* {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+noscript {
+  margin-top: 3rem;
+  font-size: 2rem;
+  padding: 0.4rem;
+  display: block;
+}
+
+html,
+body {
+  text-rendering: optimizeLegibility;
+  font: 16px/1.8 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(-45deg, var(--brand-2), #ee7752, #b24592);
+  background-size: 400% 400%;
+  animation: gradient 30s ease infinite;
+  color: var(--brand-1);
+  font-size: 16px;
+}
