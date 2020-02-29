@@ -3,17 +3,17 @@
   "short_name": "GA Calc",
   "icons": [
     {
-      "src": "images/ga-favicon-192x192.png",
+      "src": "/images/ga-favicon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "images/ga-favicon-512x512.png",
+      "src": "/images/ga-favicon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#fff",
   "background_color": "#d18fb4",
   "display": "standalone"
 }

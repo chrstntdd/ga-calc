@@ -34,7 +34,7 @@ function ActiveUnderline({ container, elements, activeIndex }) {
       }
     }
 
-    window.addEventListener("resize", updateRectangleMeasurements)
+    addEventListener("resize", updateRectangleMeasurements)
 
     let rafRef = requestAnimationFrame(updateRectangleMeasurements)
 
@@ -43,7 +43,7 @@ function ActiveUnderline({ container, elements, activeIndex }) {
 
       if (rafRef) cancelAnimationFrame(rafRef)
 
-      window.removeEventListener("resize", updateRectangleMeasurements)
+      removeEventListener("resize", updateRectangleMeasurements)
     }
   }, [container, elements])
 

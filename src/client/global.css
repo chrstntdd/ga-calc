@@ -9,6 +9,13 @@
   font-smoothing: antialiased;
 }
 
+noscript {
+  margin-top: 3rem;
+  font-size: 2rem;
+  padding: 0.4rem;
+  display: block;
+}
+
 html,
 body {
   text-rendering: optimizeLegibility;
