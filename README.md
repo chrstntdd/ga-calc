@@ -62,8 +62,11 @@ At a high level, the build script is responsible for the following:
 
 ## Todo
 
-[] Input validation? (`inputMode="decimal"` seems to work well enough)
-[] Smooth out ServiceWorker integration
-[] Pre-render? (work out bugs w/ hydrating inputs and using persisted `localStorage` state)
-[] Tests 😅
-[] Differential serving
+- [ ] Input validation? (`inputMode="decimal"` seems to work well enough)
+- [ ] Smooth out ServiceWorker integration
+  - [ ] Offline messaging
+  - [ ] Update messaging
+  - [ ] Integrate w/ build process
+- [ ] Pre-render? (work out bugs w/ hydrating inputs and using persisted `localStorage` state)
+- [ ] Tests 😅
+- [ ] Differential serving
