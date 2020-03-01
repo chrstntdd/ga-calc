@@ -50,7 +50,7 @@ module.exports = {
           },
           mangle: { safari10: true },
           output: {
-            ecma: 5,
+            ecma: 8,
             comments: false,
             ascii_only: true
           }
