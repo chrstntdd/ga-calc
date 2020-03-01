@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from "fs"
-import { join } from "path"
+import { readFileSync, writeFileSync, readdirSync } from "fs"
+import { join, resolve } from "path"
 import { tmpdir } from "os"
 import { minify as terserMinify } from "terser"
 
@@ -9,9 +9,7 @@ import { minify } from "html-minifier"
 import { collect } from "linaria/server"
 import PurgeCSS from "purgecss"
 
-import { walkSync } from "@chrstntdd/node"
-
-import { App } from "./build/client/App"
+import { App } from "../build/client/App"
 
 const HTML_MINIFIER_OPTS = {
   collapseBooleanAttributes: true,
@@ -38,17 +36,22 @@ const HTML_MINIFIER_OPTS = {
 
 const tempHtmlPath = join(tmpdir(), "ga-calc-tmp.html")
 const tempCSSPath = join(tmpdir(), "ga-calc-tmp.css")
+const CSS_DIR = join(__dirname, "../dist/css")
 
-async function preRenderApp(htmlTemplate: string): Promise<string> {
+/**
+ * @description
+ * Collects critical CSS from linaria usage & purges unused selectors
+ * using PurgeCSS by using the HTML emitted by rendering the app &
+ * the main CSS file emitted by webpack and adds the CSS to an inline
+ * style tag the head of the document. Also minifies everything
+ */
+async function makeHtmlTemplate(htmlTemplate: string): Promise<string> {
   let html = render(<App />)
   let css
-  for (let { name } of walkSync(join(__dirname, "dist/css"), {
-    includeFiles: true,
-    includeDirs: false,
-    filter: n => /\.css$/.test(n)
-  })) {
-    css = readFileSync(name, "utf-8")
-  }
+
+  let [mainCSSFile] = readdirSync(CSS_DIR)
+  css = readFileSync(join(CSS_DIR, mainCSSFile), "utf-8")
+
   const { critical, other } = collect(html, css)
   const fullCSS = critical + other
 
@@ -80,4 +83,4 @@ async function preRenderApp(htmlTemplate: string): Promise<string> {
   return minify(preRenderedTemplate, HTML_MINIFIER_OPTS)
 }
 
-export { preRenderApp }
+export { makeHtmlTemplate }

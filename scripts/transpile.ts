@@ -5,14 +5,14 @@ import { walkSync } from "@chrstntdd/node"
 
 import { makeDirIfNonExistent } from "./util"
 
-const babelCfg = require("./.babelrc.js")
+const babelCfg = require("../.babelrc.js")
 
 const SOURCE_FILES = /\.m?[jt]sx?$/
 
 main()
 
 function main() {
-  for (let { name } of walkSync(resolve(__dirname, "src"), {
+  for (let { name } of walkSync(resolve(__dirname, "../", "src"), {
     includeDirs: false,
     includeFiles: true,
     filter: n => !n.includes(".d.ts") && SOURCE_FILES.test(n)

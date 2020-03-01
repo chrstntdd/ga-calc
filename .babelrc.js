@@ -1,6 +1,3 @@
-const IS_PRODUCTION = process.env.NODE_ENV === "production"
-const IS_DEV = process.env.NODE_ENV === "development"
-
 const sharedConfig = {
   env: {
     modern: {
@@ -42,13 +39,12 @@ const sharedConfig = {
   },
   presets: [["@babel/preset-typescript", { jsxPragma: "h" }], "linaria/babel"],
   plugins: [
-    IS_DEV && require("./goober-display-name-plugin"),
     "preval",
     [
       "@babel/plugin-transform-react-jsx",
       { pragma: "h", pragmaFrag: "Fragment" }
     ]
-  ].filter(Boolean)
+  ]
 }
 
 const mainBabelConfig = {
