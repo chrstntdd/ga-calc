@@ -66,7 +66,8 @@ async function makeHtmlTemplate(htmlTemplate: string): Promise<string> {
   const purgedCSS = (
     await new PurgeCSS().purge({
       content: [tempHtmlPath],
-      css: [tempCSSPath]
+      css: [tempCSSPath],
+      whitelistPatterns: [/:focus/]
     })
   )[0].css
 

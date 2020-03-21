@@ -1,5 +1,4 @@
 import { h } from "preact"
-import { memo } from "preact/compat"
 
 type SizeScale = "xxs" | "xs" | "sm" | "md" | "lg" | "xl"
 
@@ -27,15 +26,13 @@ let sizeToRem = (n: SizeScale): string => {
   return `${remVal}rem`
 }
 
-let Box = memo<Props>(function Box({ height, width }) {
-  return (
-    <div
-      style={{
-        height: sizeToRem(height),
-        width: sizeToRem(width)
-      }}
-    />
-  )
-})
+let Box: preact.FunctionComponent<Props> = ({ height, width }) => (
+  <div
+    style={{
+      height: sizeToRem(height),
+      width: sizeToRem(width)
+    }}
+  />
+)
 
 export { Box }

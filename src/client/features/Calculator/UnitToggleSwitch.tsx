@@ -1,6 +1,5 @@
 import { h } from "preact"
-import { useRef, useCallback } from "preact/hooks"
-import { memo, forwardRef, Fragment } from "preact/compat"
+import { useRef } from "preact/hooks"
 import { css } from "linaria"
 
 import { ActiveUnderline } from "../../ActiveUnderline"
@@ -12,51 +11,44 @@ let cn_toggleSwitchContainer = css`
   margin-bottom: 0.4rem;
 `
 
-type Props = {
+let UnitToggleSwitch: preact.FunctionComponent<{
   dispatch: any
   activeIndex: number
-}
-
-let UnitToggleSwitch = memo<Props>(function UnitToggleSwitch({
-  dispatch,
-  activeIndex
-}) {
+}> = ({ dispatch, activeIndex }) => {
   let mmInputRef = useRef(null)
   let cmInputRef = useRef(null)
   let containerRef = useRef(null)
 
-  return (
-    <Fragment>
-      <div className={cn_toggleSwitchContainer} ref={containerRef}>
-        <LabelBtn
-          ref={mmInputRef}
-          onChange={() => {
-            dispatch({ type: "SET_UNIT", payload: "mm" })
-          }}
-          label="Millimeters (mm)"
-          id="mm-opt"
-        />
-
-        <Box width="lg" />
-
-        <LabelBtn
-          ref={cmInputRef}
-          onChange={() => {
-            dispatch({ type: "SET_UNIT", payload: "cm" })
-          }}
-          label="Centimeters (cm)"
-          id="cm-opt"
-        />
-      </div>
-
-      <ActiveUnderline
-        container={containerRef}
-        elements={[mmInputRef, cmInputRef]}
-        activeIndex={activeIndex}
+  return [
+    <div className={cn_toggleSwitchContainer} ref={containerRef}>
+      <LabelBtn
+        inRef={mmInputRef}
+        onChange={() => {
+          dispatch({ type: "SET_UNIT", payload: "mm" })
+        }}
+        label="Millimeters (mm)"
+        id="mm-opt"
       />
-    </Fragment>
-  )
-})
+
+      <Box width="lg" />
+
+      <LabelBtn
+        inRef={cmInputRef}
+        onChange={() => {
+          dispatch({ type: "SET_UNIT", payload: "cm" })
+        }}
+        label="Centimeters (cm)"
+        id="cm-opt"
+      />
+    </div>,
+
+    <ActiveUnderline
+      container={containerRef}
+      elements={[mmInputRef, cmInputRef]}
+      activeIndex={activeIndex}
+    />
+  ]
+}
 
 let cn_label = css`
   white-space: nowrap;
@@ -69,20 +61,16 @@ let cn_label = css`
   }
 `
 
-let LabelBtn = forwardRef<
-  HTMLLabelElement,
-  {
-    label: string
-    onChange: (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => void
-    id: string
-  }
->(function LabelBtn({ label, onChange, id }, ref) {
-  return (
-    <label htmlFor={id} ref={ref} className={cn_label}>
-      <input name="unit-toggle" id={id} type="radio" onChange={onChange} />
-      {label}
-    </label>
-  )
-})
+let LabelBtn: preact.FunctionComponent<{
+  label: string
+  onChange: (event: h.JSX.TargetedEvent<HTMLInputElement, Event>) => void
+  id: string
+  inRef: preact.RefObject<HTMLLabelElement>
+}> = ({ label, onChange, id, inRef }) => (
+  <label htmlFor={id} ref={inRef} className={cn_label}>
+    <input name="unit-toggle" id={id} type="radio" onChange={onChange} />
+    {label}
+  </label>
+)
 
 export { UnitToggleSwitch }
