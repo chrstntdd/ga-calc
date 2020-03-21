@@ -299,16 +299,13 @@ let NumericInput: preact.FunctionComponent<{
           onBlur={() => {
             setFocus(false)
           }}
-          onChange={e => {
+          onInput={e => {
             dispatch({ type: actionType, payload: e.currentTarget!.value })
           }}
           value={value}
           id={id}
-          min="0"
           type="text"
           inputMode="decimal"
-          formNoValidate
-          autoComplete="off"
         />
         <Box width="xxs" />
         <span>{unit}</span>
