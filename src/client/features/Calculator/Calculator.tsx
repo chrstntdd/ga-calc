@@ -1,6 +1,5 @@
 import { h } from "preact"
 import { useEffect, useState } from "preact/hooks"
-import { memo, Fragment } from "preact/compat"
 import { css } from "linaria"
 
 import { Box } from "../../components/styled/Box/Box"
@@ -150,31 +149,29 @@ let Calculator = () => {
   width = makeUnit(width, unit)
   height = makeUnit(height, unit)
 
-  return (
-    <Fragment>
-      <Heading />
+  return [
+    <Heading />,
 
-      <Box height="xl" />
+    <Box height="xl" />,
 
-      <div className={cn_mainCalculator}>
-        {/* Results must be above the inputs so results are readable on mobile */}
-        <DisplayOutput
-          height={height}
-          width={width}
-          length={length}
-          unit={unit}
-        />
+    <div className={cn_mainCalculator}>
+      {/* Results must be above the inputs so results are readable on mobile */}
+      <DisplayOutput
+        height={height}
+        width={width}
+        length={length}
+        unit={unit}
+      />
 
-        <FormInputs
-          height={height}
-          width={width}
-          length={length}
-          unit={unit}
-          dispatch={dispatch}
-        />
-      </div>
-    </Fragment>
-  )
+      <FormInputs
+        height={height}
+        width={width}
+        length={length}
+        unit={unit}
+        dispatch={dispatch}
+      />
+    </div>
+  ]
 }
 
 let inputsContainNonDefaultValues = (...mes) =>
@@ -280,14 +277,14 @@ let cn_label_span = css`
   font-weight: 600;
 `
 
-let NumericInput = memo<{
+let NumericInput: preact.FunctionComponent<{
   id: string
   dispatch: any
   value: any
   unit: State["unit"]
   label: string
   actionType: string
-}>(function NumericInput({ dispatch, value, id, unit, label, actionType }) {
+}> = ({ dispatch, value, id, unit, label, actionType }) => {
   const [focus, setFocus] = useState(false)
 
   return (
@@ -302,15 +299,13 @@ let NumericInput = memo<{
           onBlur={() => {
             setFocus(false)
           }}
-          onChange={e => {
+          onInput={e => {
             dispatch({ type: actionType, payload: e.currentTarget!.value })
           }}
           value={value}
           id={id}
           type="text"
           inputMode="decimal"
-          formNoValidate
-          autoComplete="off"
         />
         <Box width="xxs" />
         <span>{unit}</span>
@@ -318,6 +313,6 @@ let NumericInput = memo<{
       </div>
     </label>
   )
-})
+}
 
 export { Calculator }

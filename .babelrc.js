@@ -5,6 +5,7 @@ const sharedConfig = {
         [
           require.resolve("@babel/preset-env"),
           {
+            bugfixes: true,
             modules: false,
             loose: true,
             exclude: ["transform-regenerator", "transform-async-to-generator"],

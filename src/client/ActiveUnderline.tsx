@@ -20,7 +20,7 @@ const measureDomNodes = (
 ): Rectangle[] =>
   elements.flatMap(el => el && el.current && el.current.getBoundingClientRect())
 
-function ActiveUnderline({ container, elements, activeIndex }) {
+let ActiveUnderline = ({ container, elements, activeIndex }) => {
   let [rects, setRects] = useState([])
   let [parentNode, setParentNode] = useState(void 0)
 

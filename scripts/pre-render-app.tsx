@@ -66,7 +66,9 @@ async function makeHtmlTemplate(htmlTemplate: string): Promise<string> {
   const purgedCSS = (
     await new PurgeCSS().purge({
       content: [tempHtmlPath],
-      css: [tempCSSPath]
+      css: [tempCSSPath],
+      whitelist: ["data-focused"],
+      defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
     })
   )[0].css
 

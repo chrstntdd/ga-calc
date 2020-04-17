@@ -1,6 +1,5 @@
 import { h } from "preact"
 import { useMemo, useState, useEffect } from "preact/hooks"
-import { memo } from "preact/compat"
 import { css } from "linaria"
 
 import { useSpring } from "../../hooks/use-spring"
@@ -31,7 +30,7 @@ let cn_timeLabelSpan = css`
   font-size: 1rem;
 `
 
-function DisplayOutput({ unit, length, width, height }: State) {
+let DisplayOutput = ({ unit, length, width, height }: State) => {
   let [animNumbers, setAnimNumbers] = useState(true)
   let result = useMemo(() => {
     return unit === "mm"
@@ -73,31 +72,29 @@ function DisplayOutput({ unit, length, width, height }: State) {
   )
 }
 
-let TimeLabel = memo(function TimeLabel({ children }) {
-  return <span className={cn_timeLabelSpan}>{children}</span>
-})
+let TimeLabel = ({ children }) => (
+  <span className={cn_timeLabelSpan}>{children}</span>
+)
 
-function StyledNum({
+let StyledNum = ({
   children,
   animNumbers
 }: {
   children: string
   offset: number
   animNumbers: boolean
-}) {
+}) => {
   let chars = children.split("")
   return (
     <div>
-      {map(chars, (ch, i) => {
-        return (
-          <StyledChar
-            animNumbers={animNumbers}
-            char={ch}
-            key={`${ch}${i}`}
-            timingOffset={i * 50}
-          />
-        )
-      })}
+      {map(chars, (ch, i) => (
+        <StyledChar
+          animNumbers={animNumbers}
+          char={ch}
+          key={`${ch}${i}`}
+          timingOffset={i * 50}
+        />
+      ))}
     </div>
   )
 }
@@ -111,7 +108,7 @@ let cn_styledCharSpan = css`
 
 const scfg = { stiffness: 200, damping: 10, mass: 0.5, decimals: 2 }
 
-function StyledChar({ char, timingOffset, animNumbers }) {
+let StyledChar = ({ char, timingOffset, animNumbers }) => {
   const [trans, setTrans] = useState(50)
   const [opacity, setOpacity] = useState(0)
   const sprungTrans = useSpring(trans, scfg)

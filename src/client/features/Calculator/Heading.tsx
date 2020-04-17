@@ -1,5 +1,4 @@
 import { h } from "preact"
-import { memo, Fragment } from "preact/compat"
 import { css } from "linaria"
 
 let cn_title = css`
@@ -18,19 +17,13 @@ let cn_subtitle = css`
   }
 `
 
-let Heading = memo(function Heading() {
-  return (
-    <Fragment>
-      <h1 className={cn_title}>📏 GA 🧮</h1>
-      <h2 className={cn_subtitle}>
-        Calculate{" "}
-        <a href="https://en.wikipedia.org/wiki/Gestational_age">
-          gestational age
-        </a>{" "}
-        based on MSD
-      </h2>
-    </Fragment>
-  )
-})
+let Heading = () => [
+  <h1 className={cn_title}>📏 GA 🧮</h1>,
+  <h2 className={cn_subtitle}>
+    Calculate{" "}
+    <a href="https://en.wikipedia.org/wiki/Gestational_age">gestational age</a>{" "}
+    based on MSD
+  </h2>
+]
 
 export { Heading }
