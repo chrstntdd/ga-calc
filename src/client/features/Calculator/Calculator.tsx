@@ -307,7 +307,6 @@ let NumericInput = memo<{
           }}
           value={value}
           id={id}
-          min="0"
           type="text"
           inputMode="decimal"
           formNoValidate
