@@ -296,13 +296,19 @@ let NumericInput: preact.FunctionComponent<{
           onFocus={() => {
             setFocus(true)
           }}
-          onBlur={() => {
+          onBlur={e => {
             setFocus(false)
+            // Set valid value controlled by reducer
+            e.currentTarget.value = value
           }}
           onInput={e => {
             dispatch({ type: actionType, payload: e.currentTarget!.value })
           }}
-          value={value}
+          ref={node => {
+            if (node && !node.value) {
+              node.value = value
+            }
+          }}
           id={id}
           type="text"
           inputMode="decimal"
