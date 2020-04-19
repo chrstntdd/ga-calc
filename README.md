@@ -1,5 +1,7 @@
 # GA Calc
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/58a60223-b0b8-4dff-9405-ad22ff957b91/deploy-status)](https://app.netlify.com/sites/ga-calc/deploys)
+
 ## About
 
 A small PWA to determine [gestational age](https://en.wikipedia.org/wiki/Gestational_age) based on [mean sac diameter](https://en.wikipedia.org/wiki/Gestational_sac).
