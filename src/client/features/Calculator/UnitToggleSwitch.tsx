@@ -11,10 +11,13 @@ let cn_toggleSwitchContainer = css`
   margin-bottom: 0.4rem;
 `
 
-let UnitToggleSwitch: preact.FunctionComponent<{
+let UnitToggleSwitch = ({
+  dispatch,
+  activeIndex
+}: {
   dispatch: any
   activeIndex: number
-}> = ({ dispatch, activeIndex }) => {
+}) => {
   let mmInputRef = useRef(null)
   let cmInputRef = useRef(null)
   let containerRef = useRef(null)

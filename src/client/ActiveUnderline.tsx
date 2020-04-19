@@ -18,11 +18,13 @@ type Rectangle = ClientRect | DOMRect
 const measureDomNodes = (
   elements: preact.RefObject<HTMLElement>[]
 ): Rectangle[] =>
-  elements.flatMap(el => el && el.current && el.current.getBoundingClientRect())
+  elements.flatMap(
+    (el) => el && el.current && el.current.getBoundingClientRect()
+  )
 
 let ActiveUnderline = ({ container, elements, activeIndex }) => {
   let [rects, setRects] = useState([])
-  let [parentNode, setParentNode] = useState(void 0)
+  let [parentNode, setParentNode] = useState()
 
   useEffect(() => {
     let isHere = true
@@ -66,10 +68,9 @@ let ActiveUnderline = ({ container, elements, activeIndex }) => {
   }
 
   let sprungTransform = useSpring(transformX)
-  let sprungWidth = useSpring(typeof width === "number" ? width : 0)
 
   style.transform = `translate3d(${sprungTransform}px, 0, 0)`
-  style.width = `${sprungWidth}px`
+  style.width = `${width}px`
 
   return <div style={style} className={cn_activeUnderline} />
 }

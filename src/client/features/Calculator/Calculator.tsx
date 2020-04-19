@@ -1,60 +1,26 @@
 import { h } from "preact"
 import { useEffect, useState } from "preact/hooks"
-import { css } from "linaria"
 
 import { Box } from "../../components/styled/Box/Box"
 import { createPersistedReducer } from "../../hooks/use-persisted-reducer"
 import { useSpring } from "../../hooks/use-spring"
 
-import { makeUnit, cmToMm, makeStorageFallback } from "./helpers"
+import { makeStorageFallback } from "./make-storage-fallback"
+import { makeUnit, cmToMm } from "./helpers"
 import { UnitToggleSwitch } from "./UnitToggleSwitch"
 import { DisplayOutput } from "./DisplayOutput"
 import { Heading } from "./Heading"
 import { State, Actions } from "./types"
-
-let cn_mainCalculator = css`
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  max-width: 1160px;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-
-  @media (min-width: 1160px) {
-    /* render the result on the right */
-    align-items: flex-start;
-    flex-direction: row-reverse;
-  }
-
-  & > fieldset {
-    outline: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-  }
-`
-
-let cn_filedSet = css`
-  display: flex;
-  flex-direction: column;
-`
-
-let cn_resetBtn = css`
-  border: 1px solid var(--brand-1);
-  padding: 0.8rem;
-  color: white;
-  background-color: transparent;
-  border-radius: 0.2rem;
-  font-weight: 400;
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--brand-2);
-    text-decoration: underline;
-  }
-`
+import {
+  cn_input,
+  cn_resetBtn,
+  cn_mainCalculator,
+  cn_filedSet,
+  cn_label,
+  cn_label_span,
+  cn_input_container,
+  cn_unit
+} from "./Calculator.styes"
 
 let ResetBtn = ({ onClick, children, show }) => {
   const [trans, setTrans] = useState(30)
@@ -163,119 +129,60 @@ let Calculator = () => {
         unit={unit}
       />
 
-      <FormInputs
-        height={height}
-        width={width}
-        length={length}
-        unit={unit}
-        dispatch={dispatch}
-      />
+      <fieldset>
+        <div className={cn_filedSet}>
+          <UnitToggleSwitch
+            dispatch={dispatch}
+            activeIndex={unit === "mm" ? 0 : 1}
+          />
+
+          <Box height="lg" />
+
+          <NumericInput
+            actionType="SET_LENGTH"
+            dispatch={dispatch}
+            id="Length"
+            label="Length"
+            unit={unit}
+            value={length}
+          />
+
+          <NumericInput
+            actionType="SET_WIDTH"
+            dispatch={dispatch}
+            id="Width"
+            label="Width"
+            unit={unit}
+            value={width}
+          />
+
+          <NumericInput
+            actionType="SET_HEIGHT"
+            dispatch={dispatch}
+            id="Height"
+            label="Height"
+            unit={unit}
+            value={height}
+          />
+
+          <Box height="xs" />
+
+          <ResetBtn
+            show={inputsContainNonDefaultValues(length, width, height)}
+            onClick={() => {
+              dispatch({ type: "RESET" })
+            }}
+          >
+            Clear measurements
+          </ResetBtn>
+        </div>
+      </fieldset>
     </div>
   ]
 }
 
 let inputsContainNonDefaultValues = (...mes) =>
-  mes.some(m => m != DEFAULT_MEASUREMENT_VAL)
-
-let FormInputs = ({
-  dispatch,
-  unit,
-  length,
-  width,
-  height
-}: { dispatch: any } & State) => {
-  return (
-    <fieldset>
-      <div className={cn_filedSet}>
-        <UnitToggleSwitch
-          dispatch={dispatch}
-          activeIndex={unit === "mm" ? 0 : 1}
-        />
-
-        <Box height="lg" />
-
-        <NumericInput
-          actionType="SET_LENGTH"
-          dispatch={dispatch}
-          id="Length"
-          label="Length"
-          unit={unit}
-          value={length}
-        />
-
-        <NumericInput
-          actionType="SET_WIDTH"
-          dispatch={dispatch}
-          id="Width"
-          label="Width"
-          unit={unit}
-          value={width}
-        />
-
-        <NumericInput
-          actionType="SET_HEIGHT"
-          dispatch={dispatch}
-          id="Height"
-          label="Height"
-          unit={unit}
-          value={height}
-        />
-
-        <Box height="xs" />
-
-        <ResetBtn
-          show={inputsContainNonDefaultValues(length, width, height)}
-          onClick={() => {
-            dispatch({ type: "RESET" })
-          }}
-        >
-          Clear measurements
-        </ResetBtn>
-      </div>
-    </fieldset>
-  )
-}
-
-let cn_label = css`
-  display: flex;
-  align-items: center;
-  position: relative;
-  margin: 0.6rem 0;
-`
-
-let cn_input_container = css`
-  display: flex;
-  border: 1px solid var(--brand-1);
-  align-items: center;
-  border-radius: 0.2rem;
-  transition: border 200ms ease;
-  width: 100%;
-  justify-content: flex-end;
-
-  &[data-focused="true"] {
-    box-shadow: 0 0 0 2px var(--brand-1);
-  }
-`
-
-let cn_input = css`
-  border: none;
-  background-color: transparent;
-  font-size: 1.6rem;
-  color: var(--brand-1);
-  text-align: right;
-  width: 100%;
-  min-height: 42px;
-
-  &:focus {
-    outline: none;
-  }
-`
-
-let cn_label_span = css`
-  min-width: 60px;
-  font-variant: small-caps;
-  font-weight: 600;
-`
+  mes.some((m) => m != DEFAULT_MEASUREMENT_VAL)
 
 let NumericInput: preact.FunctionComponent<{
   id: string
@@ -293,32 +200,57 @@ let NumericInput: preact.FunctionComponent<{
       <div className={cn_input_container} data-focused={focus}>
         <input
           className={cn_input}
-          onFocus={() => {
+          onFocus={(e) => {
+            e.currentTarget.select()
             setFocus(true)
           }}
-          onBlur={e => {
+          onBlur={() => {
             setFocus(false)
-            // Set valid value controlled by reducer
-            e.currentTarget.value = value
           }}
-          onInput={e => {
-            dispatch({ type: actionType, payload: e.currentTarget!.value })
-          }}
-          ref={node => {
-            if (node && !node.value) {
-              node.value = value
-            }
+          // Sync the value when we lose focus
+          value={deriveInputValue(value, focus)}
+          onInput={(e) => {
+            dispatch({
+              type: actionType,
+              payload: e.currentTarget!.value
+            })
           }}
           id={id}
-          type="text"
           inputMode="decimal"
+          formNoValidate={true}
         />
         <Box width="xxs" />
-        <span>{unit}</span>
+        <span className={cn_unit}>{unit}</span>
         <Box width="xxs" />
       </div>
     </label>
   )
+}
+
+function deriveInputValue(value, focused) {
+  // Let input be uncontrolled
+  if (focused) return
+
+  /**
+   * @desc
+   * Trying to get around float weirdness for the case
+   * when we have a float measurement in mm which can get
+   * converted to mm.
+   *
+   * 2.3 mm -> 0.23 cm is what we expect
+   *
+   * With plain JS this is not the case
+   *
+   * 2.3 mm -> 0.22999999999999998 cm 😞
+   *
+   * This hack should properly round things and trim any non-significant
+   * zeros.
+   *
+   */
+  if ((value + "").includes(".")) {
+    return parseFloat(parseFloat(value).toPrecision(10)).toString()
+  }
+  return value
 }
 
 export { Calculator }

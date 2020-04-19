@@ -21,7 +21,8 @@
       sizes="16x16"
       href="/images/ga-favicon-16x16.png"
     />
-    <link rel="manifest" href="/images/webmanifest.json" />
+    <!-- WEB_MANIFEST -->
+
     <meta name="theme-color" content="#fff" />
     <meta
       name="description"
@@ -36,14 +37,6 @@
       Please enable it.
     </noscript>
     <div id="root"></div>
-    <script>
-      if ("serviceWorker" in navigator) {
-        ;(async () => {
-          try {
-            navigator.serviceWorker.register("/sw.js")
-          } catch {}
-        })()
-      }
-    </script>
+    <!-- REGISTER_SERVICE_WORKER_SCRIPT -->
   </body>
 </html>

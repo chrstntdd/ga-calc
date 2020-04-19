@@ -13,7 +13,7 @@ module.exports = git.branch() + "--" + git.short();
  */
 let offlineFundamentals = ["./"]
 
-addEventListener("install", event => {
+addEventListener("install", (event) => {
   event.waitUntil(
     /* The caches built-in is a promise-based API that helps you cache responses,
        as well as finding and deleting them.
@@ -24,21 +24,21 @@ addEventListener("install", event => {
          one fell swoop later, when phasing out an older service worker.
       */
       .open(version)
-      .then(cache => cache.addAll(offlineFundamentals))
+      .then((cache) => cache.addAll(offlineFundamentals))
   )
 })
 
-addEventListener("fetch", event => {
+addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then(response => {
+    caches.match(event.request).then((response) => {
       if (response) return response
 
       return (
         fetch(event.request)
           // Add fetched files to the cache
-          .then(response => {
+          .then((response) => {
             // TODO 5 - Respond with custom 404 page
-            return caches.open(version).then(cache => {
+            return caches.open(version).then((cache) => {
               cache.put(event.request.url, response.clone())
               return response
             })
@@ -48,14 +48,14 @@ addEventListener("fetch", event => {
   )
 })
 
-addEventListener("activate", event => {
+addEventListener("activate", (event) => {
   event.waitUntil(
     // We return a promise that settles when all outdated caches are deleted.
-    caches.keys().then(keys => {
+    caches.keys().then((keys) => {
       return Promise.all(
         keys
-          .filter(key => !key.startsWith(version))
-          .map(key => caches.delete(key))
+          .filter((key) => !key.startsWith(version))
+          .map((key) => caches.delete(key))
       )
     })
   )
@@ -63,7 +63,7 @@ addEventListener("activate", event => {
 
 let deferredPrompt
 
-addEventListener("beforeinstallprompt", e => {
+addEventListener("beforeinstallprompt", (e) => {
   // Prevent the mini-infobar from appearing on mobile
   e.preventDefault()
   // Stash the event so it can be triggered later.

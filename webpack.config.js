@@ -1,5 +1,6 @@
 // @ts-check
 const path = require("path"),
+  { readFileSync } = require("fs"),
   webpack = require("webpack"),
   HtmlWebpackPlugin = require("html-webpack-plugin"),
   TerserPlugin = require("terser-webpack-plugin"),
@@ -153,8 +154,36 @@ module.exports = {
         {},
         {
           inject: IS_DEVELOPMENT,
-          template: path.resolve(__dirname, "src/client/index.html"),
-          minify: false
+          // template: path.resolve(__dirname, "src/client/index.html"),
+          minify: false,
+          templateContent: () => {
+            const templateFile = readFileSync(
+              path.resolve(__dirname, "src/client/index.html"),
+              "utf-8"
+            )
+
+            return templateFile
+              .replace(
+                "<!-- REGISTER_SERVICE_WORKER_SCRIPT -->",
+                IS_PRODUCTION
+                  ? `<script>
+            if ("serviceWorker" in navigator) {
+              ;(async () => {
+                try {
+                  navigator.serviceWorker.register("/sw.js")
+                } catch {}
+              })()
+            }
+          </script>`
+                  : ""
+              )
+              .replace(
+                "<!-- WEB_MANIFEST -->",
+                IS_PRODUCTION
+                  ? '<link rel="manifest" href="/images/webmanifest.json" />'
+                  : ""
+              )
+          }
         }
       )
     ),

@@ -20,7 +20,7 @@ const usePersistedReducer = (
   return [state, dispatch]
 }
 
-const createStorage = provider => ({
+const createStorage = (provider) => ({
   get(key, initialState) {
     const json = provider.getItem(key)
     return json === null
