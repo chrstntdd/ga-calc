@@ -9,6 +9,7 @@
     "_transpile-src": "NODE_ENV=production node -r esm -r ts-node/register/transpile-only ./scripts/transpile.ts"
   },
   "dependencies": {
+    "esm": "^3.2.25",
     "preact": "^10.4.0"
   },
   "devDependencies": {
@@ -27,7 +28,6 @@
     "cross-env": "^7.0.2",
     "cross-spawn": "^7.0.2",
     "css-loader": "^3.5.2",
-    "esm": "^3.2.25",
     "extract-css-chunks-webpack-plugin": "^4.7.4",
     "fast-async": "^6.3.8",
     "git-rev-sync": "^2.0.0",
