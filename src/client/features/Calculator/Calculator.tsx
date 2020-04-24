@@ -6,8 +6,6 @@ import { createPersistedReducer } from "../../hooks/use-persisted-reducer"
 import { useSpring } from "../../hooks/use-spring"
 
 import { makeStorageFallback } from "./make-storage-fallback"
-import { makeUnit, cmToMm } from "./helpers"
-import { UnitToggleSwitch } from "./UnitToggleSwitch"
 import { DisplayOutput } from "./DisplayOutput"
 import { Heading } from "./Heading"
 import { State, Actions } from "./types"
@@ -55,38 +53,27 @@ let ResetBtn = ({ onClick, children, show }) => {
 
 const DEFAULT_MEASUREMENT_VAL = 0
 let initState: State = {
-  unit: "mm",
   length: DEFAULT_MEASUREMENT_VAL,
   width: DEFAULT_MEASUREMENT_VAL,
   height: DEFAULT_MEASUREMENT_VAL
 }
 
-let deriveState = (input: string, unit: State["unit"]): number => {
+let deriveState = (input: string): number => {
   let intVal = parseFloat(input)
   let valWithDefault = Number.isNaN(intVal) ? DEFAULT_MEASUREMENT_VAL : intVal
 
-  switch (unit) {
-    case "mm":
-      return valWithDefault
-
-    case "cm":
-      return cmToMm(valWithDefault)
-
-    default:
-      throw Error("Unknown unit: " + unit)
-  }
+  return valWithDefault
 }
 
 let reducer = (state: State, action: Actions): State => {
   switch (action.type) {
     case "SET_LENGTH":
-      return { ...state, length: deriveState(action.payload, state.unit) }
+      return { ...state, length: deriveState(action.payload) }
     case "SET_WIDTH":
-      return { ...state, width: deriveState(action.payload, state.unit) }
+      return { ...state, width: deriveState(action.payload) }
     case "SET_HEIGHT":
-      return { ...state, height: deriveState(action.payload, state.unit) }
-    case "SET_UNIT":
-      return { ...state, unit: action.payload }
+      return { ...state, height: deriveState(action.payload) }
+
     case "RESET":
       return {
         ...state,
@@ -106,14 +93,10 @@ const usePersistedReducer = createPersistedReducer(
 )
 
 let Calculator = () => {
-  let [{ length, width, height, unit }, dispatch] = usePersistedReducer(
+  let [{ length, width, height }, dispatch] = usePersistedReducer(
     reducer,
     initState
   )
-
-  length = makeUnit(length, unit)
-  width = makeUnit(width, unit)
-  height = makeUnit(height, unit)
 
   return [
     <Heading />,
@@ -122,20 +105,10 @@ let Calculator = () => {
 
     <div className={cn_mainCalculator}>
       {/* Results must be above the inputs so results are readable on mobile */}
-      <DisplayOutput
-        height={height}
-        width={width}
-        length={length}
-        unit={unit}
-      />
+      <DisplayOutput height={height} width={width} length={length} />
 
       <fieldset>
         <div className={cn_filedSet}>
-          <UnitToggleSwitch
-            dispatch={dispatch}
-            activeIndex={unit === "mm" ? 0 : 1}
-          />
-
           <Box height="lg" />
 
           <NumericInput
@@ -143,7 +116,6 @@ let Calculator = () => {
             dispatch={dispatch}
             id="Length"
             label="Length"
-            unit={unit}
             value={length}
           />
 
@@ -152,7 +124,6 @@ let Calculator = () => {
             dispatch={dispatch}
             id="Width"
             label="Width"
-            unit={unit}
             value={width}
           />
 
@@ -161,7 +132,6 @@ let Calculator = () => {
             dispatch={dispatch}
             id="Height"
             label="Height"
-            unit={unit}
             value={height}
           />
 
@@ -188,10 +158,9 @@ let NumericInput: preact.FunctionComponent<{
   id: string
   dispatch: any
   value: any
-  unit: State["unit"]
   label: string
   actionType: string
-}> = ({ dispatch, value, id, unit, label, actionType }) => {
+}> = ({ dispatch, value, id, label, actionType }) => {
   const [focus, setFocus] = useState(false)
 
   return (
@@ -220,7 +189,7 @@ let NumericInput: preact.FunctionComponent<{
           formNoValidate={true}
         />
         <Box width="xxs" />
-        <span className={cn_unit}>{unit}</span>
+        <span className={cn_unit}>mm</span>
         <Box width="xxs" />
       </div>
     </label>

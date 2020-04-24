@@ -5,15 +5,7 @@ import { css } from "linaria"
 import { useSpring } from "../../hooks/use-spring"
 
 import { State } from "./types"
-import { meanSacDiameter, cmToMm, daysToWeeks } from "./helpers"
-
-let cn_resultContainer = css`
-  width: 100%;
-  margin: 1rem 0;
-  @media (min-width: 1160px) {
-    margin: 0;
-  }
-`
+import { meanSacDiameter, formatDaysToWeeksAndDays } from "./helpers"
 
 let cn_timeResult = css`
   display: flex;
@@ -23,6 +15,25 @@ let cn_timeResult = css`
   width: 100%;
 `
 
+let cn_resultContainer = css`
+  width: 100%;
+  margin: 1rem 0;
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  &[data-status="only-weeks"] {
+    .${cn_timeResult} {
+      grid-row: span 2;
+    }
+  }
+
+  @media (min-width: 1160px) {
+    margin: 0;
+  }
+`
+
 let cn_timeLabelSpan = css`
   position: absolute;
   top: 0;
@@ -30,13 +41,26 @@ let cn_timeLabelSpan = css`
   font-size: 1rem;
 `
 
-let DisplayOutput = ({ unit, length, width, height }: State) => {
+let cn_dayOutput = css`
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+  display: flex;
+  align-self: flex-start;
+
+  &[data-status="only-weeks"] {
+    grid-column: span 2;
+    justify-self: center;
+  }
+`
+
+let DisplayOutput = ({ length, width, height }: State) => {
   let [animNumbers, setAnimNumbers] = useState(true)
-  let result = useMemo(() => {
-    return unit === "mm"
-      ? meanSacDiameter(length, width, height)
-      : meanSacDiameter(cmToMm(length), cmToMm(width), cmToMm(height))
-  }, [unit, length, width, height])
+  let [weeks, remainingDays] = useMemo<[number, number]>(() => {
+    let totalDays = meanSacDiameter(length, width, height)
+
+    return formatDaysToWeeksAndDays(totalDays)
+  }, [length, width, height])
 
   /**
    * We only want the trailing reveal on the first mount,
@@ -51,29 +75,60 @@ let DisplayOutput = ({ unit, length, width, height }: State) => {
     }, 2000)
   }, [])
 
-  result = useSpring(result)
+  weeks = useSpring(weeks)
+  remainingDays = useSpring(remainingDays)
+
+  let dayCount = Math.floor(remainingDays)
 
   return (
-    <div className={cn_resultContainer}>
+    <div
+      data-status={dayCount ? "with-days" : "only-weeks"}
+      className={cn_resultContainer}
+    >
       <div className={cn_timeResult}>
         <StyledNum animNumbers={animNumbers} offset={1}>
-          {`${Math.floor(result)}`}
-        </StyledNum>
-        <TimeLabel>Days</TimeLabel>
-      </div>
-
-      <div className={cn_timeResult}>
-        <StyledNum animNumbers={animNumbers} offset={200}>
-          {daysToWeeks(result).toFixed(2)}
+          {`${Math.floor(weeks)}`}
         </StyledNum>
         <TimeLabel>Weeks</TimeLabel>
       </div>
+      {dayCount ? (
+        <div
+          className={`${css`
+            align-self: end;
+            grid-column: 2;
+            grid-row: 1;
+          `}`}
+        >
+          and
+        </div>
+      ) : null}
+      {dayCount ? (
+        <div className={`relative ${cn_dayOutput}`}>
+          <StyledNum animNumbers={animNumbers} offset={1}>
+            {`${dayCount}`}
+          </StyledNum>
+          <TimeLabel
+            className={`${css`
+              bottom: 0;
+              top: unset;
+            `}`}
+          >
+            {`Day${dayCount > 1 ? "s" : ""}`}
+          </TimeLabel>
+        </div>
+      ) : null}
     </div>
   )
 }
 
-let TimeLabel = ({ children }) => (
-  <span className={cn_timeLabelSpan}>{children}</span>
+let TimeLabel = ({
+  children,
+  className
+}: {
+  className?: string
+  children: any
+}) => (
+  <span className={`${cn_timeLabelSpan} ${className || ""}`}>{children}</span>
 )
 
 let StyledNum = ({
@@ -84,7 +139,26 @@ let StyledNum = ({
   offset: number
   animNumbers: boolean
 }) => {
-  let chars = children.split("")
+  let parsedChildren = parseFloat(children)
+  let charType =
+    typeof parsedChildren === "number" && !Number.isNaN(parsedChildren)
+      ? "number"
+      : "string"
+
+  let splitChildren = children.split(charType === "number" ? "" : " ")
+  let chars = splitChildren.flatMap((c, index) => {
+    if (charType === "number") {
+      return [c]
+    }
+
+    let wordChars = c.split("")
+    // Add space between each word except for the last word
+    if (index !== splitChildren.length - 1) {
+      wordChars.push(" ")
+    }
+    return wordChars
+  })
+
   return (
     <div>
       {map(chars, (ch, i) => (
@@ -104,6 +178,9 @@ let cn_styledCharSpan = css`
   font-variant-numeric: tabular-nums;
   display: inline-block;
   line-height: 1.4;
+  &[data-space] {
+    width: 1rem;
+  }
 `
 
 const scfg = { stiffness: 200, damping: 10, mass: 0.5, decimals: 2 }
@@ -132,6 +209,7 @@ let StyledChar = ({ char, timingOffset, animNumbers }) => {
   return (
     <span
       className={cn_styledCharSpan}
+      data-space={char === " " ? "" : null}
       style={{
         transform: `translateY(${animNumbers ? sprungTrans : 0}px)`,
         opacity: animNumbers ? sprungOp : 1
