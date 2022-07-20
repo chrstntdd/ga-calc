@@ -41,7 +41,7 @@
     "purgecss": "^2.1.2",
     "regenerator-runtime": "^0.13.5",
     "style-loader": "^1.1.4",
-    "terser": "^4.6.11",
+    "terser": "^4.8.1",
     "terser-webpack-plugin": "^2.3.5",
     "ts-node": "^8.8.2",
     "typescript": "^3.8.3",
